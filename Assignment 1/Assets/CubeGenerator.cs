@@ -19,11 +19,19 @@ namespace Assignment01
 {
     public class CubeGenerator
     {
-        string name;
+        Texture2D CubeResult;
+        Vector3 A;
+        Vector3 B;
+        Vector3 C;
+        Vector3 D;
+        Vector3 E;
+        Vector3 F;
+        Vector3 RED = new Vector3(1, 0, 0);
+        Vector3 GREEN = new Vector3(0, 1, 0);
+        Vector3 BLUE = new Vector3(0, 0, 1);
         public CubeGenerator()
         {
             //you can define your cube vertices and indices in the constructor.
-            name = "CubeGenerator";
         }
 
         public Texture2D GenBarycentricVis(int width, int height)
@@ -38,7 +46,56 @@ namespace Assignment01
             return:
                 Texture2D - Texture2D object which contains the rendered result
             */
-            throw new NotImplementedException();
+            CubeResult = new Texture2D(width, height);
+            B = new Vector3(width / 2, (height / 2) - 100, 0);
+            D = new Vector3(width / 2, (height / 2) + 100, 0);
+            A = new Vector3((width / 2) - 150, (height / 2) - 95, 10);
+            C = new Vector3((width / 2) - 150, (height / 2) + 95, 10);
+            E = new Vector3((width / 2) + 150, (height / 2) + 95, 10);
+            F = new Vector3((width / 2) + 150, (height / 2) - 95, 10);
+            //CubeResult.SetPixel(width / 2, (height / 2) - 100, Color.black);
+            //CubeResult.SetPixel(width / 2, (height / 2) + 100, Color.black);
+            //CubeResult.SetPixel((width / 2) - 190, (height / 2) - 90, Color.black);
+            //CubeResult.SetPixel((width / 2) - 190, (height / 2) + 110, Color.black);
+            //CubeResult.SetPixel((width / 2) + 190, (height / 2) - 90, Color.black);
+            //CubeResult.SetPixel((width / 2) + 190, (height / 2) + 110, Color.black);
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    Vector3 RayOrigin = new Vector3(x, y, 0);
+                    Vector3 RayDirection = new Vector3(0, 0, 1);
+                    float t;
+                    Vector3 BarycentricCoordinate;
+                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
+                    {
+                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
+                        Color color = new Color(resColor.x, resColor.y, resColor.z);
+                        CubeResult.SetPixel(x, y, color);
+                    }
+                    else if(IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate))
+                    {
+                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
+                        Color color = new Color(resColor.x, resColor.y, resColor.z);
+                        CubeResult.SetPixel(x, y, color);
+                    }
+                    else if(IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate))
+                    {
+                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
+                        Color color = new Color(resColor.x, resColor.y, resColor.z);
+                        CubeResult.SetPixel(x, y, color);
+                    }
+                    else if(IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate))
+                    {
+                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
+                        Color color = new Color(resColor.x, resColor.y, resColor.z);
+                        CubeResult.SetPixel(x, y, color);
+                    }
+                }
+            }
+
+            CubeResult.Apply();
+            return CubeResult;
         }
 
         public Texture2D GenUVMapping(int width, int height, Texture2D inputTexture)
@@ -77,7 +134,41 @@ namespace Assignment01
             return:
                 bool - indicating hit or not
             */
-            throw new NotImplementedException();
+            float a = vA.x - vB.x;
+            float b = vA.y - vB.y;
+            float c = vA.z - vB.z;
+            float d = vA.x - vC.x;
+            float e = vA.y - vC.y;
+            float f = vA.z - vC.z;
+            float g = direction.x;
+            float h = direction.y;
+            float i = direction.z;
+            float j = vA.x - origin.x;
+            float k = vA.y - origin.y;
+            float l = vA.z - origin.z;
+            float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
+            float beta = (j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g)) / M;
+            if (beta < 0 || beta > 1) {
+                t = 0;
+                barycentricCoordinate = new Vector3(0, 0, 0);
+                return false;
+            }
+            float gamma = (i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c)) / M;
+            if (gamma < 0 || gamma > 1) {
+                t = 0;
+                barycentricCoordinate = new Vector3(0, 0, 0);
+                return false;
+            }
+            if (beta + gamma > 1) 
+            {
+                t = 0;
+                barycentricCoordinate = new Vector3(0, 0, 0);
+                return false;
+            }
+            t = (f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c)) / M;
+            barycentricCoordinate = new Vector3(1 - gamma - beta, beta, gamma);
+            Debug.Log(barycentricCoordinate);
+            return true;
         }
     }
 }
