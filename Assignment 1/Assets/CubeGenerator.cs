@@ -53,12 +53,6 @@ namespace Assignment01
             C = new Vector3((width / 2) - 150, (height / 2) + 95, 10);
             E = new Vector3((width / 2) + 150, (height / 2) + 95, 10);
             F = new Vector3((width / 2) + 150, (height / 2) - 95, 10);
-            //CubeResult.SetPixel(width / 2, (height / 2) - 100, Color.black);
-            //CubeResult.SetPixel(width / 2, (height / 2) + 100, Color.black);
-            //CubeResult.SetPixel((width / 2) - 190, (height / 2) - 90, Color.black);
-            //CubeResult.SetPixel((width / 2) - 190, (height / 2) + 110, Color.black);
-            //CubeResult.SetPixel((width / 2) + 190, (height / 2) - 90, Color.black);
-            //CubeResult.SetPixel((width / 2) + 190, (height / 2) + 110, Color.black);
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
@@ -67,29 +61,18 @@ namespace Assignment01
                     Vector3 RayDirection = new Vector3(0, 0, 1);
                     float t;
                     Vector3 BarycentricCoordinate;
-                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
+                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate) || 
+                        IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate) ||
+                        IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate) ||
+                        IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate)
+                       )
                     {
-                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
-                        Color color = new Color(resColor.x, resColor.y, resColor.z);
-                        CubeResult.SetPixel(x, y, color);
+                        Vector3 InterploationColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
+                        CubeResult.SetPixel(x, y, new Color(InterploationColor.x, InterploationColor.y, InterploationColor.z));
                     }
-                    else if(IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate))
+                    else 
                     {
-                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
-                        Color color = new Color(resColor.x, resColor.y, resColor.z);
-                        CubeResult.SetPixel(x, y, color);
-                    }
-                    else if(IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate))
-                    {
-                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
-                        Color color = new Color(resColor.x, resColor.y, resColor.z);
-                        CubeResult.SetPixel(x, y, color);
-                    }
-                    else if(IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate))
-                    {
-                        Vector3 resColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
-                        Color color = new Color(resColor.x, resColor.y, resColor.z);
-                        CubeResult.SetPixel(x, y, color);
+                        CubeResult.SetPixel(x, y, Color.grey);
                     }
                 }
             }
@@ -148,18 +131,8 @@ namespace Assignment01
             float l = vA.z - origin.z;
             float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
             float beta = (j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g)) / M;
-            if (beta < 0 || beta > 1) {
-                t = 0;
-                barycentricCoordinate = new Vector3(0, 0, 0);
-                return false;
-            }
             float gamma = (i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c)) / M;
-            if (gamma < 0 || gamma > 1) {
-                t = 0;
-                barycentricCoordinate = new Vector3(0, 0, 0);
-                return false;
-            }
-            if (beta + gamma > 1) 
+            if ((gamma < 0 || gamma > 1) || (beta < 0 || beta > 1) || (beta + gamma > 1))
             {
                 t = 0;
                 barycentricCoordinate = new Vector3(0, 0, 0);
@@ -167,7 +140,6 @@ namespace Assignment01
             }
             t = (f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c)) / M;
             barycentricCoordinate = new Vector3(1 - gamma - beta, beta, gamma);
-            Debug.Log(barycentricCoordinate);
             return true;
         }
     }
