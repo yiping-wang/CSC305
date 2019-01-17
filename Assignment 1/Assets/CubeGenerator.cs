@@ -47,12 +47,12 @@ namespace Assignment01
                 Texture2D - Texture2D object which contains the rendered result
             */
             CubeResult = new Texture2D(width, height);
-            B = new Vector3(width / 2, (height / 2) - 100, 0);
-            D = new Vector3(width / 2, (height / 2) + 100, 0);
-            A = new Vector3((width / 2) - 150, (height / 2) - 95, 10);
-            C = new Vector3((width / 2) - 150, (height / 2) + 95, 10);
-            E = new Vector3((width / 2) + 150, (height / 2) + 95, 10);
-            F = new Vector3((width / 2) + 150, (height / 2) - 95, 10);
+            B = new Vector3(width / 2, (height / 2) - 200, 0);
+            D = new Vector3(width / 2, (height / 2) + 200, 0);
+            A = new Vector3((width / 2) - 300, (height / 2) - 180, 10);
+            C = new Vector3((width / 2) - 300, (height / 2) + 180, 10);
+            E = new Vector3((width / 2) + 300, (height / 2) + 180, 10);
+            F = new Vector3((width / 2) + 300, (height / 2) - 180, 10);
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
