@@ -29,6 +29,7 @@ namespace Assignment01
         Vector3 RED = new Vector3(1, 0, 0);
         Vector3 GREEN = new Vector3(0, 1, 0);
         Vector3 BLUE = new Vector3(0, 0, 1);
+        int imageSize = 1024;
         public CubeGenerator()
         {
             //you can define your cube vertices and indices in the constructor.
@@ -97,7 +98,46 @@ namespace Assignment01
             return:
                 Texture2D - Texture2D object which contains the rendered result
             */
-            throw new NotImplementedException();
+            CubeResult = new Texture2D(width, height);
+            B = new Vector3(width / 2, (height / 2) - 200, 0);
+            D = new Vector3(width / 2, (height / 2) + 200, 0);
+            A = new Vector3((width / 2) - 300, (height / 2) - 180, 10);
+            C = new Vector3((width / 2) - 300, (height / 2) + 180, 10);
+            E = new Vector3((width / 2) + 300, (height / 2) + 180, 10);
+            F = new Vector3((width / 2) + 300, (height / 2) - 180, 10);
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    Vector3 RayOrigin = new Vector3(x, y, 0);
+                    Vector3 RayDirection = new Vector3(0, 0, 1);
+                    float t;
+                    Vector3 BarycentricCoordinate;
+                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
+                    {
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize * BarycentricCoordinate.z), Convert.ToInt32(imageSize * BarycentricCoordinate.y)));
+                    }
+                    else if (IntersectTriangle(RayOrigin, RayDirection, D, C, B, out t, out BarycentricCoordinate))
+                    {
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.y), Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.z)));
+                    }
+                    else if (IntersectTriangle(RayOrigin, RayDirection, D, E, B, out t, out BarycentricCoordinate))
+                    {
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.y), Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.z)));
+                    }
+                    else if (IntersectTriangle(RayOrigin, RayDirection, F, E, B, out t, out BarycentricCoordinate))
+                    {
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize * BarycentricCoordinate.z), Convert.ToInt32(imageSize * BarycentricCoordinate.y)));
+                    }
+                    else
+                    {
+                        CubeResult.SetPixel(x, y, Color.grey);
+                    }
+                }
+            }
+
+            CubeResult.Apply();
+            return CubeResult;
         }
 
         private bool IntersectTriangle(Vector3 origin,
