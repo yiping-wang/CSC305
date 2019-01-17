@@ -45,7 +45,7 @@ namespace Assignment01
             */
             Texture2D SphereResult = new Texture2D(width, height);
             SphereCeneter = new Vector3(width / 2, height / 2, 200);
-            LightLocation = new Vector3(width , height * 2, 800);
+            LightLocation = new Vector3(width, height * 2, -800);
             ViewLocation = new Vector3(width, height, 0); // where should I define view location
             canvasHeight = height;
             canvasWidth = width;
@@ -62,8 +62,7 @@ namespace Assignment01
                     {
                         Vector3 SurfacePoint = RayOrigin + t * RayDirection;
                         float LightColor = Lambertian(0.2f, IntersectNormal, SurfacePoint) + BlinnPhong(0.2f, IntersectNormal, SurfacePoint, 1.5f) + Ambient(0.02f);
-                        Color color = new Color(LightColor, 0, 0);
-                        SphereResult.SetPixel(x, y, color);
+                        SphereResult.SetPixel(x, y, new Color(LightColor, 0, 0));
                     }
                     else
                     {
@@ -106,7 +105,9 @@ namespace Assignment01
                 return false;
             }
 
-            t = (-B + Mathf.Sqrt(D))/(2*A);
+            float t0 = (-B + Mathf.Sqrt(D)) / (2 * A);
+            float t1 = (-B - Mathf.Sqrt(D)) / (2 * A);
+            t = Mathf.Min(t0, t1);
             IntersectNormal = Vector3.Normalize(RayOrigin + t * RayDirection - SphereCenter);
             return true;
         }
