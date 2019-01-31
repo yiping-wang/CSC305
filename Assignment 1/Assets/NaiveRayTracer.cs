@@ -1,13 +1,8 @@
 ﻿/* 
 UVic CSC 305, 2019 Spring
 Assignment 01
-Name:
-UVic ID:
-
-This is the script attached to the camera object.
-Feel free to add any member variables or functions that you need.
-Feel free to modify the pre-defined function header if you need.
-Please fill your name and uvic id.
+Name: Yiping Wang
+UVic ID: V00894385
 */
 
 using System;
@@ -64,16 +59,9 @@ namespace Assignment01
             renderedResult.Apply();
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
         //OnRenderImage is called after all rendering is complete to render image.
         private void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
-            //Debug.Log("Here is the OnRenderImage of class NaiveRayTracer");
             Graphics.Blit(renderedResult, destination);
         }
     }

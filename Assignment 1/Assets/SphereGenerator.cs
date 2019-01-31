@@ -52,11 +52,11 @@ namespace Assignment01
             ViewportHeight = (float)CanvasHeight / (float)CanvasWidth * ViewportWidth;
             SphereResult = new Texture2D(width, height);
 
-            // ray trace from each pixel of camera
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
+                    // Perspective projection
                     Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
                     Vector3 intersectNormal;
