@@ -21,20 +21,20 @@ namespace Assignment01
         Vector3 RayOrigin;
         float LightIntensity;
         float SphereRadius;
-        int CanvasWidth;
-        int CanvasHeight;
         float ViewportWidth;
         float ViewportHeight;
+        int CanvasWidth;
+        int CanvasHeight;
 
         public SphereGenerator()
         {
-            ViewportWidth = 4;
-            SphereRadius = 5;
-            LightIntensity = 2.5f;
             SphereCeneter = new Vector3(0, 0, 10);
             RayOrigin = new Vector3(0, 0, 0);
             ViewLocation = new Vector3(0, 0, 0);
+            SphereRadius = 5;
             LightLocation = new Vector3(2 * SphereRadius, 2 * SphereRadius, -5);
+            ViewportWidth = 4;
+            LightIntensity = 2.5f;
         }
 
         public Texture2D GenSphere(int width, int height)

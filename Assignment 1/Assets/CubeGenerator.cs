@@ -36,7 +36,6 @@ namespace Assignment01
             Red = new Vector3(1, 0, 0);
             Green = new Vector3(0, 1, 0);
             Blue = new Vector3(0, 0, 1);
-
             // Unity Display 1920 * 1680
             VertexA = new Vector3(-12, -9.5f, 10.5f);
             VertexB = new Vector3(0, -10, 10);
@@ -63,7 +62,6 @@ namespace Assignment01
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
             CanvasWidth = width;
-
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
@@ -86,7 +84,6 @@ namespace Assignment01
                     }
                 }
             }
-
             CubeResult.Apply();
             return CubeResult;
         }
@@ -108,14 +105,15 @@ namespace Assignment01
                 Texture2D - Texture2D object which contains the rendered result
             */
             int imageWidth = inputTexture.width;
+            int imageHeight = inputTexture.height;
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
             CanvasWidth = width;
 
             Vector2 u0 = new Vector2(0, 0);
             Vector2 u1 = new Vector2(imageWidth, 0);
-            Vector2 v0 = new Vector2(0, imageWidth);
-            Vector2 v1 = new Vector2(imageWidth, imageWidth);
+            Vector2 v0 = new Vector2(0, imageHeight);
+            Vector2 v1 = new Vector2(imageWidth, imageHeight);
                 
             for (int y = 0; y < height; ++y)
             {
