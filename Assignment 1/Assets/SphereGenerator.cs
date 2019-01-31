@@ -24,12 +24,16 @@ namespace Assignment01
         Vector3 ViewLocation;
         float LIGHTINTENSITY;
         float RADIUS;
-        int canvasWidth;
-        int canvasHeight;
+        int CanvasWidth;
+        int CanvasHeight;
+        float ViewportWidth;
+        float ViewportHeight;
 
         public SphereGenerator()
         {
-            RADIUS = 100;
+            ViewportHeight = 1.9f;
+            ViewportWidth = 4;
+            RADIUS = 5;
             LIGHTINTENSITY = 2.5f;
         }
 
@@ -44,25 +48,27 @@ namespace Assignment01
                 Texture2D - Texture2D object which contains the rendered result
             */
             Texture2D SphereResult = new Texture2D(width, height);
-            SphereCeneter = new Vector3(width / 2, height / 2, 200);
+            SphereCeneter = new Vector3(0, 0, 10);
             LightLocation = new Vector3(width, height * 2, -800);
-            ViewLocation = new Vector3(width, height, 0); // where should I define view location
-            canvasHeight = height;
-            canvasWidth = width;
+            ViewLocation = new Vector3(width, height, 0);
+            CanvasHeight = height;
+            CanvasWidth = width;
+            
+            Vector3 RayOrigin = new Vector3(0, 0, 0);
+
             // ray trace from each pixel of camera
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    Vector3 RayOrigin = new Vector3(x, y, 0);
-                    Vector3 RayDirection = new Vector3(0, 0, 1);
+                    Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
                     Vector3 IntersectNormal;
                     if (IntersectSphere(RayOrigin, RayDirection, SphereCeneter, RADIUS, out t, out IntersectNormal))
                     {
                         Vector3 SurfacePoint = RayOrigin + t * RayDirection;
-                        float LightColor = Lambertian(0.2f, IntersectNormal, SurfacePoint) + BlinnPhong(0.2f, IntersectNormal, SurfacePoint, 1.5f) + Ambient(0.02f);
-                        SphereResult.SetPixel(x, y, new Color(LightColor, 0, 0));
+                        float color = Lambertian(0.2f, IntersectNormal, SurfacePoint) + BlinnPhong(0.2f, IntersectNormal, SurfacePoint, 1.5f) + Ambient(0.02f);
+                        SphereResult.SetPixel(x, y, new Color(color, 0, 0));
                     }
                     else
                     {
@@ -107,6 +113,7 @@ namespace Assignment01
 
             float t0 = (-B + Mathf.Sqrt(D)) / (2 * A);
             float t1 = (-B - Mathf.Sqrt(D)) / (2 * A);
+
             t = Mathf.Min(t0, t1);
             IntersectNormal = Vector3.Normalize(RayOrigin + t * RayDirection - SphereCenter);
             return true;
