@@ -36,6 +36,8 @@ namespace Assignment01
             Red = new Vector3(1, 0, 0);
             Green = new Vector3(0, 1, 0);
             Blue = new Vector3(0, 0, 1);
+
+            // Unity Display 1920 * 1680
             VertexA = new Vector3(-12, -9.5f, 10.5f);
             VertexB = new Vector3(0, -10, 10);
             VertexC = new Vector3(-12, 9.5f, 10.5f);
@@ -124,22 +126,22 @@ namespace Assignment01
                     Vector3 barycentricCoordinate;
                     if (IntersectTriangle(RayOrigin, RayDirection, VertexA, VertexC, VertexB, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = u0 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + u1 * barycentricCoordinate.z;
+                        Vector2 uv = GetUVCoordinate(u0, v0, u1, barycentricCoordinate);
                         CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexC, VertexD, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = u1 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + v1 * barycentricCoordinate.z;
+                        Vector2 uv = GetUVCoordinate(u1, v0, v1, barycentricCoordinate);
                         CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexD, VertexE, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = u0 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + v1 * barycentricCoordinate.z;
+                        Vector2 uv = GetUVCoordinate(u0, v0, v1, barycentricCoordinate);
                         CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexE, VertexF, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = u0 * barycentricCoordinate.x + v1 * barycentricCoordinate.y + u1 * barycentricCoordinate.z;
+                        Vector2 uv = GetUVCoordinate(u0, v1, u1, barycentricCoordinate);
                         CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
                     else
@@ -185,7 +187,7 @@ namespace Assignment01
             float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
             float beta = (j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g)) / M;
             float gamma = (i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c)) / M;
-            if ((gamma < 0 || gamma > 1) || (beta < 0 || beta > 1) || (beta + gamma > 1))
+            if (gamma < 0 || gamma > 1 || beta < 0 || beta > 1 || beta + gamma > 1)
             {
                 t = 0;
                 barycentricCoordinate = new Vector3(0, 0, 0);
@@ -194,6 +196,11 @@ namespace Assignment01
             t = (f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c)) / M;
             barycentricCoordinate = new Vector3(1 - gamma - beta, beta, gamma);
             return true;
+        }
+
+        private Vector2 GetUVCoordinate(Vector2 vertexA, Vector2 vertexB, Vector2 vertexC, Vector3 barycentricCoordinate)
+        {
+            return vertexA * barycentricCoordinate.x + vertexB * barycentricCoordinate.y + vertexC * barycentricCoordinate.z;
         }
     }
 }
