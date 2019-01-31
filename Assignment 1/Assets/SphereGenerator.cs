@@ -22,6 +22,7 @@ namespace Assignment01
         Vector3 SphereCeneter;
         Vector3 LightLocation;
         Vector3 ViewLocation;
+        Texture2D SphereResult;
         float LIGHTINTENSITY;
         float RADIUS;
         int CanvasWidth;
@@ -31,10 +32,10 @@ namespace Assignment01
 
         public SphereGenerator()
         {
-            ViewportHeight = 1.9f;
             ViewportWidth = 4;
             RADIUS = 5;
             LIGHTINTENSITY = 2.5f;
+            SphereCeneter = new Vector3(0, 0, 10);
         }
 
         public Texture2D GenSphere(int width, int height)
@@ -47,13 +48,12 @@ namespace Assignment01
             return:
                 Texture2D - Texture2D object which contains the rendered result
             */
-            Texture2D SphereResult = new Texture2D(width, height);
-            SphereCeneter = new Vector3(0, 0, 10);
-            LightLocation = new Vector3(width, height * 2, -800);
-            ViewLocation = new Vector3(width, height, 0);
             CanvasHeight = height;
             CanvasWidth = width;
-            
+            ViewportHeight = (float)CanvasHeight / (float)CanvasWidth * ViewportWidth;
+            SphereResult = new Texture2D(width, height);
+            LightLocation = new Vector3(width, height, -50);
+            ViewLocation = new Vector3(0, 0, 0);
             Vector3 RayOrigin = new Vector3(0, 0, 0);
 
             // ray trace from each pixel of camera

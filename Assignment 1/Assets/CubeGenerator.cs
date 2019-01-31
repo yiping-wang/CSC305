@@ -29,7 +29,11 @@ namespace Assignment01
         Vector3 RED = new Vector3(1, 0, 0);
         Vector3 GREEN = new Vector3(0, 1, 0);
         Vector3 BLUE = new Vector3(0, 0, 1);
+        int CanvasWidth;
+        int CanvasHeight;
         int imageSize = 1024;
+        float ViewportWidth = 4;
+        float ViewportHeight = 4;
         public CubeGenerator()
         {
             //you can define your cube vertices and indices in the constructor.
@@ -48,18 +52,22 @@ namespace Assignment01
                 Texture2D - Texture2D object which contains the rendered result
             */
             CubeResult = new Texture2D(width, height);
-            B = new Vector3(width / 2, (height / 2) - 200, 0);
-            D = new Vector3(width / 2, (height / 2) + 200, 0);
-            A = new Vector3((width / 2) - 300, (height / 2) - 180, 10);
-            C = new Vector3((width / 2) - 300, (height / 2) + 180, 10);
-            E = new Vector3((width / 2) + 300, (height / 2) + 180, 10);
-            F = new Vector3((width / 2) + 300, (height / 2) - 180, 10);
+            CanvasHeight = height;
+            CanvasWidth = width;
+            Vector3 RayOrigin = new Vector3(0, 0, 0);
+
+            B = new Vector3(0, -10, 10);
+            D = new Vector3(0, 10, 10);
+            A = new Vector3(-12, -9.5f, 10.5f);
+            C = new Vector3(-12, 9.5f, 10.5f);
+            E = new Vector3(12, 9.5f, 10.5f);
+            F = new Vector3(12, -9.5f, 10.5f);
+
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    Vector3 RayOrigin = new Vector3(x, y, 0);
-                    Vector3 RayDirection = new Vector3(0, 0, 1);
+                    Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
                     Vector3 BarycentricCoordinate;
                     if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate) || 
@@ -99,18 +107,23 @@ namespace Assignment01
                 Texture2D - Texture2D object which contains the rendered result
             */
             CubeResult = new Texture2D(width, height);
-            B = new Vector3(width / 2, (height / 2) - 200, 0);
-            D = new Vector3(width / 2, (height / 2) + 200, 0);
-            A = new Vector3((width / 2) - 300, (height / 2) - 180, 10);
-            C = new Vector3((width / 2) - 300, (height / 2) + 180, 10);
-            E = new Vector3((width / 2) + 300, (height / 2) + 180, 10);
-            F = new Vector3((width / 2) + 300, (height / 2) - 180, 10);
+
+            B = new Vector3(0, -10, 10);
+            D = new Vector3(0, 10, 10);
+            A = new Vector3(-12, -9.5f, 10.5f);
+            C = new Vector3(-12, 9.5f, 10.5f);
+            E = new Vector3(12, 9.5f, 10.5f);
+            F = new Vector3(12, -9.5f, 10.5f);
+
+            CanvasHeight = height;
+            CanvasWidth = width;
+
+            Vector3 RayOrigin = new Vector3(0, 0, 0);
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    Vector3 RayOrigin = new Vector3(x, y, 0);
-                    Vector3 RayDirection = new Vector3(0, 0, 1);
+                    Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
                     Vector3 BarycentricCoordinate;
                     if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
@@ -179,6 +192,7 @@ namespace Assignment01
                 return false;
             }
             t = (f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c)) / M;
+
             barycentricCoordinate = new Vector3(1 - gamma - beta, beta, gamma);
             return true;
         }
