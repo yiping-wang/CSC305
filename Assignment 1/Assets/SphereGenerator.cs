@@ -1,13 +1,8 @@
 /* 
 UVic CSC 305, 2019 Spring
 Assignment 01
-Name:
-UVic ID:
-
-This is skeleton code we provided.
-Feel free to add any member variables or functions that you need.
-Feel free to modify the pre-defined function header or constructor if you need.
-Please fill your name and uvic id.
+Name: Yiping Wang
+UVic ID: V00894385
 */
 
 using System;
@@ -24,8 +19,8 @@ namespace Assignment01
         Texture2D SphereResult;
         Vector3 ViewLocation;
         Vector3 RayOrigin;
-        float LIGHTINTENSITY;
-        float RADIUS;
+        float LightIntensity;
+        float SphereRadius;
         int CanvasWidth;
         int CanvasHeight;
         float ViewportWidth;
@@ -34,11 +29,12 @@ namespace Assignment01
         public SphereGenerator()
         {
             ViewportWidth = 4;
-            RADIUS = 5;
-            LIGHTINTENSITY = 2.5f;
+            SphereRadius = 5;
+            LightIntensity = 2.5f;
             SphereCeneter = new Vector3(0, 0, 10);
             RayOrigin = new Vector3(0, 0, 0);
             ViewLocation = new Vector3(0, 0, 0);
+            LightLocation = new Vector3(2 * SphereRadius, 2 * SphereRadius, -5);
         }
 
         public Texture2D GenSphere(int width, int height)
@@ -55,7 +51,6 @@ namespace Assignment01
             CanvasWidth = width;
             ViewportHeight = (float)CanvasHeight / (float)CanvasWidth * ViewportWidth;
             SphereResult = new Texture2D(width, height);
-            LightLocation = new Vector3(width, height, -50);
 
             // ray trace from each pixel of camera
             for (int y = 0; y < height; ++y)
@@ -64,11 +59,11 @@ namespace Assignment01
                 {
                     Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
-                    Vector3 IntersectNormal;
-                    if (IntersectSphere(RayOrigin, RayDirection, SphereCeneter, RADIUS, out t, out IntersectNormal))
+                    Vector3 intersectNormal;
+                    if (IntersectSphere(RayOrigin, RayDirection, SphereCeneter, SphereRadius, out t, out intersectNormal))
                     {
-                        Vector3 SurfacePoint = RayOrigin + t * RayDirection;
-                        float color = Lambertian(0.2f, IntersectNormal, SurfacePoint) + BlinnPhong(0.2f, IntersectNormal, SurfacePoint, 1.5f) + Ambient(0.02f);
+                        Vector3 surfacePoint = RayOrigin + t * RayDirection;
+                        float color = Lambertian(0.2f, intersectNormal, surfacePoint, LightLocation) + BlinnPhong(0.2f, intersectNormal, surfacePoint, ViewLocation, LightLocation, 10f) + Ambient(0.02f);
                         SphereResult.SetPixel(x, y, new Color(color, 0, 0));
                     }
                     else
@@ -82,12 +77,12 @@ namespace Assignment01
 
             return SphereResult;
         }
-        private bool IntersectSphere(Vector3 RayOrigin,
-                                        Vector3 RayDirection,
-                                        Vector3 SphereCenter,
-                                        float SphereRadius,
+        private bool IntersectSphere(Vector3 rayOrigin,
+                                        Vector3 rayDirection,
+                                        Vector3 sphereCenter,
+                                        float sphereRadius,
                                         out float t,
-                                        out Vector3 IntersectNormal
+                                        out Vector3 intersectNormal
                                         )
         {
             /*
@@ -100,15 +95,15 @@ namespace Assignment01
             return:
                 bool - indicating hit or not
             */
-            float A = Vector3.Dot(RayDirection, RayDirection);
-            float B = 2 * Vector3.Dot(RayDirection, (RayOrigin - SphereCenter));
-            float C = Vector3.Dot(RayOrigin - SphereCenter, RayOrigin - SphereCenter) - SphereRadius * SphereRadius;
+            float A = Vector3.Dot(rayDirection, rayDirection);
+            float B = 2 * Vector3.Dot(rayDirection, (rayOrigin - sphereCenter));
+            float C = Vector3.Dot(rayOrigin - sphereCenter, rayOrigin - sphereCenter) - sphereRadius * sphereRadius;
             float D = B * B - 4 * A * C;
 
             if (D < 0)
             {
                 t = 0;
-                IntersectNormal = new Vector3(0, 0, 0);
+                intersectNormal = new Vector3(0, 0, 0);
                 return false;
             }
 
@@ -116,27 +111,26 @@ namespace Assignment01
             float t1 = (-B - Mathf.Sqrt(D)) / (2 * A);
 
             t = Mathf.Min(t0, t1);
-            IntersectNormal = Vector3.Normalize(RayOrigin + t * RayDirection - SphereCenter);
+            intersectNormal = Vector3.Normalize(rayOrigin + t * rayDirection - sphereCenter);
             return true;
         }
 
-        private float Lambertian(float DiffuseCoefficient, Vector3 IntersectNormal, Vector3 SurfacePoint)
+        private float Lambertian(float diffuseCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 lightLocation)
         {
-            Vector3 l = Vector3.Normalize(LightLocation - SurfacePoint);
-            return DiffuseCoefficient * LIGHTINTENSITY * Mathf.Max(0, Vector3.Dot(IntersectNormal, l));
+            return diffuseCoefficient * LightIntensity * Mathf.Max(0, Vector3.Dot(intersectNormal, Vector3.Normalize(lightLocation - surfacePoint)));
         }
 
-        private float BlinnPhong(float SpecularCoefficient, Vector3 IntersectNormal, Vector3 SurfacePoint, float p)
+        private float BlinnPhong(float specularCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 viewLocation, Vector3 lightLocation, float phongExponent)
         {
-            Vector3 v = Vector3.Normalize(ViewLocation - SurfacePoint);
-            Vector3 l = Vector3.Normalize(LightLocation - SurfacePoint);
-            Vector3 h = Vector3.Normalize(v + l);
-            return SpecularCoefficient * LIGHTINTENSITY * Mathf.Pow(Mathf.Max(0, Vector3.Dot(IntersectNormal, h)), p);
+            return specularCoefficient * LightIntensity * 
+                Mathf.Pow(Mathf.Max(0, Vector3.Dot(intersectNormal, 
+                                                   Vector3.Normalize(Vector3.Normalize(viewLocation - surfacePoint) + 
+                                                                     Vector3.Normalize(lightLocation - surfacePoint)))), phongExponent);
         }
 
         private float Ambient(float AmbientCoefficient)
         {
-            return AmbientCoefficient * LIGHTINTENSITY;
+            return AmbientCoefficient * LightIntensity;
         }
     }
 }

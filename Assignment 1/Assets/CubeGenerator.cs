@@ -1,13 +1,8 @@
 /* 
 UVic CSC 305, 2019 Spring
 Assignment 01
-Name:
-UVic ID:
-
-This is skeleton code we provided.
-Feel free to add any member variables or functions that you need.
-Feel free to modify the pre-defined function header or constructor if you need.
-Please fill your name and uvic id.
+Name: Yiping Wang
+UVic ID: V00894385
 */
 
 using System;
@@ -19,35 +14,34 @@ namespace Assignment01
 {
     public class CubeGenerator
     {
+        Texture2D CubeResult;
         Vector3 RayOrigin;
-        Vector3 RED;
-        Vector3 GREEN;
-        Vector3 BLUE;
-        Vector3 B;
-        Vector3 D;
-        Vector3 A;
-        Vector3 C;
-        Vector3 E;
-        Vector3 F;
+        Vector3 Red;
+        Vector3 Green;
+        Vector3 Blue;
+        Vector3 VertexA;
+        Vector3 VertexB;
+        Vector3 VertexC;
+        Vector3 VertexD;
+        Vector3 VertexE;
+        Vector3 VertexF;
         float ViewportWidth;
         float ViewportHeight;
-
         int CanvasWidth;
         int CanvasHeight;
-        Texture2D CubeResult;
 
         public CubeGenerator()
         {
             RayOrigin = new Vector3(0, 0, 0);
-            RED = new Vector3(1, 0, 0);
-            GREEN = new Vector3(0, 1, 0);
-            BLUE = new Vector3(0, 0, 1);
-            B = new Vector3(0, -10, 10);
-            D = new Vector3(0, 10, 10);
-            A = new Vector3(-12, -9.5f, 10.5f);
-            C = new Vector3(-12, 9.5f, 10.5f);
-            E = new Vector3(12, 9.5f, 10.5f);
-            F = new Vector3(12, -9.5f, 10.5f);
+            Red = new Vector3(1, 0, 0);
+            Green = new Vector3(0, 1, 0);
+            Blue = new Vector3(0, 0, 1);
+            VertexA = new Vector3(-12, -9.5f, 10.5f);
+            VertexB = new Vector3(0, -10, 10);
+            VertexC = new Vector3(-12, 9.5f, 10.5f);
+            VertexD = new Vector3(0, 10, 10);
+            VertexE = new Vector3(12, 9.5f, 10.5f);
+            VertexF = new Vector3(12, -9.5f, 10.5f);
             ViewportWidth = 4;
             ViewportHeight = 4;
         }
@@ -74,15 +68,15 @@ namespace Assignment01
                 {
                     Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
-                    Vector3 BarycentricCoordinate;
-                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate) || 
-                        IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate) ||
-                        IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate) ||
-                        IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate)
+                    Vector3 barycentricCoordinate;
+                    if (IntersectTriangle(RayOrigin, RayDirection, VertexA, VertexC, VertexB, out t, out barycentricCoordinate) || 
+                        IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexC, VertexD, out t, out barycentricCoordinate) ||
+                        IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexD, VertexE, out t, out barycentricCoordinate) ||
+                        IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexE, VertexF, out t, out barycentricCoordinate)
                        )
                     {
-                        Vector3 InterploationColor = BarycentricCoordinate.x * RED + BarycentricCoordinate.y * GREEN + BarycentricCoordinate.z * BLUE;
-                        CubeResult.SetPixel(x, y, new Color(InterploationColor.x, InterploationColor.y, InterploationColor.z));
+                        Vector3 interploatedColor = barycentricCoordinate.x * Red + barycentricCoordinate.y * Green + barycentricCoordinate.z * Blue;
+                        CubeResult.SetPixel(x, y, new Color(interploatedColor.x, interploatedColor.y, interploatedColor.z));
                     }
                     else 
                     {
@@ -111,15 +105,15 @@ namespace Assignment01
             return:
                 Texture2D - Texture2D object which contains the rendered result
             */
-            int ImageSize = 1024;
+            int imageWidth = inputTexture.width;
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
             CanvasWidth = width;
 
-            Vector2 a = new Vector2(0, 0);
-            Vector2 b = new Vector2(ImageSize, 0);
-            Vector2 c = new Vector2(0, ImageSize);
-            Vector2 d = new Vector2(ImageSize, ImageSize);
+            Vector2 u0 = new Vector2(0, 0);
+            Vector2 u1 = new Vector2(imageWidth, 0);
+            Vector2 v0 = new Vector2(0, imageWidth);
+            Vector2 v1 = new Vector2(imageWidth, imageWidth);
                 
             for (int y = 0; y < height; ++y)
             {
@@ -127,30 +121,26 @@ namespace Assignment01
                 {
                     Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
-                    Vector3 BarycentricCoordinate;
-                    if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
+                    Vector3 barycentricCoordinate;
+                    if (IntersectTriangle(RayOrigin, RayDirection, VertexA, VertexC, VertexB, out t, out barycentricCoordinate))
                     {
-                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * b.x,
-                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * b.y);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
+                        Vector2 uv = u0 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + u1 * barycentricCoordinate.z;
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexC, VertexD, out t, out barycentricCoordinate))
                     {
-                        Vector2 Point = new Vector2(BarycentricCoordinate.x * b.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * d.x,
-                                                    BarycentricCoordinate.x * b.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * d.y);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
+                        Vector2 uv = u1 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + v1 * barycentricCoordinate.z;
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexD, VertexE, out t, out barycentricCoordinate))
                     {
-                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * d.x,
-                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * d.y);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(ImageSize - Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
+                        Vector2 uv = u0 * barycentricCoordinate.x + v0 * barycentricCoordinate.y + v1 * barycentricCoordinate.z;
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexE, VertexF, out t, out barycentricCoordinate))
                     {
-                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * d.x + BarycentricCoordinate.z * b.x,
-                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * d.y + BarycentricCoordinate.z * b.y);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(ImageSize - Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
+                        Vector2 uv = u0 * barycentricCoordinate.x + v1 * barycentricCoordinate.y + u1 * barycentricCoordinate.z;
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
                     }
                     else
                     {
@@ -163,35 +153,35 @@ namespace Assignment01
             return CubeResult;
         }
 
-        private bool IntersectTriangle(Vector3 origin,
-                                        Vector3 direction,
-                                        Vector3 vA,
-                                        Vector3 vB,
-                                        Vector3 vC,
+        private bool IntersectTriangle(Vector3 rayOrigin,
+                                        Vector3 rayDirection,
+                                        Vector3 vertexA,
+                                        Vector3 vertexB,
+                                        Vector3 vertexC,
                                         out float t,
                                         out Vector3 barycentricCoordinate)
         {
             /*
-            Vector3 origin - origin point of the ray
-            Vector3 direction - the direction of the ray
-            vA, vB, vC - 3 vertices of the target triangle
+            Vector3 rayOrigin - origin point of the ray
+            Vector3 rayDirection - the direction of the ray
+            vertexA, vertexB, vertexC - 3 vertices of the target triangle
             out float t - distance the ray travelled to hit a point
             out Vector3 barycentricCoordinate - you should know what this is
             return:
                 bool - indicating hit or not
             */
-            float a = vA.x - vB.x;
-            float b = vA.y - vB.y;
-            float c = vA.z - vB.z;
-            float d = vA.x - vC.x;
-            float e = vA.y - vC.y;
-            float f = vA.z - vC.z;
-            float g = direction.x;
-            float h = direction.y;
-            float i = direction.z;
-            float j = vA.x - origin.x;
-            float k = vA.y - origin.y;
-            float l = vA.z - origin.z;
+            float a = vertexA.x - vertexB.x;
+            float b = vertexA.y - vertexB.y;
+            float c = vertexA.z - vertexB.z;
+            float d = vertexA.x - vertexC.x;
+            float e = vertexA.y - vertexC.y;
+            float f = vertexA.z - vertexC.z;
+            float g = rayDirection.x;
+            float h = rayDirection.y;
+            float i = rayDirection.z;
+            float j = vertexA.x - rayOrigin.x;
+            float k = vertexA.y - rayOrigin.y;
+            float l = vertexA.z - rayOrigin.z;
             float M = a * (e * i - h * f) + b * (g * f - d * i) + c * (d * h - e * g);
             float beta = (j * (e * i - h * f) + k * (g * f - d * i) + l * (d * h - e * g)) / M;
             float gamma = (i * (a * k - j * b) + h * (j * c - a * l) + g * (b * l - k * c)) / M;
