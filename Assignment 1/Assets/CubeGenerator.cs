@@ -19,24 +19,37 @@ namespace Assignment01
 {
     public class CubeGenerator
     {
-        Texture2D CubeResult;
-        Vector3 A;
+        Vector3 RayOrigin;
+        Vector3 RED;
+        Vector3 GREEN;
+        Vector3 BLUE;
         Vector3 B;
-        Vector3 C;
         Vector3 D;
+        Vector3 A;
+        Vector3 C;
         Vector3 E;
         Vector3 F;
-        Vector3 RED = new Vector3(1, 0, 0);
-        Vector3 GREEN = new Vector3(0, 1, 0);
-        Vector3 BLUE = new Vector3(0, 0, 1);
+        float ViewportWidth;
+        float ViewportHeight;
+
         int CanvasWidth;
         int CanvasHeight;
-        int imageSize = 1024;
-        float ViewportWidth = 4;
-        float ViewportHeight = 4;
+        Texture2D CubeResult;
+
         public CubeGenerator()
         {
-            //you can define your cube vertices and indices in the constructor.
+            RayOrigin = new Vector3(0, 0, 0);
+            RED = new Vector3(1, 0, 0);
+            GREEN = new Vector3(0, 1, 0);
+            BLUE = new Vector3(0, 0, 1);
+            B = new Vector3(0, -10, 10);
+            D = new Vector3(0, 10, 10);
+            A = new Vector3(-12, -9.5f, 10.5f);
+            C = new Vector3(-12, 9.5f, 10.5f);
+            E = new Vector3(12, 9.5f, 10.5f);
+            F = new Vector3(12, -9.5f, 10.5f);
+            ViewportWidth = 4;
+            ViewportHeight = 4;
         }
 
         public Texture2D GenBarycentricVis(int width, int height)
@@ -54,14 +67,6 @@ namespace Assignment01
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
             CanvasWidth = width;
-            Vector3 RayOrigin = new Vector3(0, 0, 0);
-
-            B = new Vector3(0, -10, 10);
-            D = new Vector3(0, 10, 10);
-            A = new Vector3(-12, -9.5f, 10.5f);
-            C = new Vector3(-12, 9.5f, 10.5f);
-            E = new Vector3(12, 9.5f, 10.5f);
-            F = new Vector3(12, -9.5f, 10.5f);
 
             for (int y = 0; y < height; ++y)
             {
@@ -106,19 +111,16 @@ namespace Assignment01
             return:
                 Texture2D - Texture2D object which contains the rendered result
             */
+            int ImageSize = 1024;
             CubeResult = new Texture2D(width, height);
-
-            B = new Vector3(0, -10, 10);
-            D = new Vector3(0, 10, 10);
-            A = new Vector3(-12, -9.5f, 10.5f);
-            C = new Vector3(-12, 9.5f, 10.5f);
-            E = new Vector3(12, 9.5f, 10.5f);
-            F = new Vector3(12, -9.5f, 10.5f);
-
             CanvasHeight = height;
             CanvasWidth = width;
 
-            Vector3 RayOrigin = new Vector3(0, 0, 0);
+            Vector2 a = new Vector2(0, 0);
+            Vector2 b = new Vector2(ImageSize, 0);
+            Vector2 c = new Vector2(0, ImageSize);
+            Vector2 d = new Vector2(ImageSize, ImageSize);
+                
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
@@ -128,19 +130,27 @@ namespace Assignment01
                     Vector3 BarycentricCoordinate;
                     if (IntersectTriangle(RayOrigin, RayDirection, A, C, B, out t, out BarycentricCoordinate))
                     {
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize * BarycentricCoordinate.z), Convert.ToInt32(imageSize * BarycentricCoordinate.y)));
+                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * b.x,
+                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * b.y);
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, D, C, B, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, B, C, D, out t, out BarycentricCoordinate))
                     {
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.y), Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.z)));
+                        Vector2 Point = new Vector2(BarycentricCoordinate.x * b.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * d.x,
+                                                    BarycentricCoordinate.x * b.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * d.y);
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, D, E, B, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, B, D, E, out t, out BarycentricCoordinate))
                     {
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.y), Convert.ToInt32(imageSize - imageSize * BarycentricCoordinate.z)));
+                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * c.x + BarycentricCoordinate.z * d.x,
+                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * c.y + BarycentricCoordinate.z * d.y);
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(ImageSize - Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
                     }
-                    else if (IntersectTriangle(RayOrigin, RayDirection, F, E, B, out t, out BarycentricCoordinate))
+                    else if (IntersectTriangle(RayOrigin, RayDirection, B, E, F, out t, out BarycentricCoordinate))
                     {
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(imageSize * BarycentricCoordinate.z), Convert.ToInt32(imageSize * BarycentricCoordinate.y)));
+                        Vector2 Point = new Vector2(BarycentricCoordinate.x * a.x + BarycentricCoordinate.y * d.x + BarycentricCoordinate.z * b.x,
+                                                    BarycentricCoordinate.x * a.y + BarycentricCoordinate.y * d.y + BarycentricCoordinate.z * b.y);
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(ImageSize - Convert.ToInt32(Point.x), Convert.ToInt32(Point.y)));
                     }
                     else
                     {
@@ -192,7 +202,6 @@ namespace Assignment01
                 return false;
             }
             t = (f * (a * k - j * b) + e * (j * c - a * l) + d * (b * l - k * c)) / M;
-
             barycentricCoordinate = new Vector3(1 - gamma - beta, beta, gamma);
             return true;
         }
