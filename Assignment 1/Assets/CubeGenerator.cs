@@ -110,10 +110,11 @@ namespace Assignment01
             CanvasHeight = height;
             CanvasWidth = width;
 
+            // Texture coordinate
             Vector2 u0 = new Vector2(0, 0);
-            Vector2 u1 = new Vector2(imageWidth, 0);
-            Vector2 v0 = new Vector2(0, imageHeight);
-            Vector2 v1 = new Vector2(imageWidth, imageHeight);
+            Vector2 u1 = new Vector2(1, 0);
+            Vector2 v0 = new Vector2(0, 1);
+            Vector2 v1 = new Vector2(1, 1);
                 
             for (int y = 0; y < height; ++y)
             {
@@ -125,22 +126,22 @@ namespace Assignment01
                     if (IntersectTriangle(RayOrigin, RayDirection, VertexA, VertexC, VertexB, out t, out barycentricCoordinate))
                     {
                         Vector2 uv = GetUVCoordinate(u0, v0, u1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexC, VertexD, out t, out barycentricCoordinate))
                     {
                         Vector2 uv = GetUVCoordinate(u1, v0, v1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexD, VertexE, out t, out barycentricCoordinate))
                     {
                         Vector2 uv = GetUVCoordinate(u0, v0, v1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexE, VertexF, out t, out barycentricCoordinate))
                     {
                         Vector2 uv = GetUVCoordinate(u0, v1, u1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x), Convert.ToInt32(uv.y)));
+                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
                     }
                     else
                     {

@@ -33,7 +33,7 @@ namespace Assignment01
 
             //following if-else statement helps graders to grade your assignment.
             //change the renderMethod to test your implementation.
-            string renderMethod = "sphere";
+            string renderMethod = "uvmapping";
             if (renderMethod == "checkboard")
             {
                 CheckboardGenerator myRenderer = new CheckboardGenerator();
