@@ -34,7 +34,7 @@ namespace Assignment01
             SphereRadius = 5;
             LightLocation = new Vector3(7 * SphereRadius, 7 * SphereRadius, -5);
             ViewportWidth = 4;
-            LightIntensity = 4f;
+            LightIntensity = 2.8f;
         }
 
         public Texture2D GenSphere(int width, int height)
@@ -67,7 +67,7 @@ namespace Assignment01
                     {
                         Vector3 surfacePoint = RayOrigin + t * RayDirection;
                         float color = Lambertian(0.2f, intersectNormal, surfacePoint, LightLocation) + BlinnPhong(0.2f, intersectNormal, surfacePoint, ViewLocation, LightLocation, 10f) + Ambient(0.02f);
-                        SphereResult.SetPixel(x, y, new Color(0.7f * color, 0.7f * color, 0));
+                        SphereResult.SetPixel(x, y, new Color(color, color, 0));
                     }
                     else
                     {
