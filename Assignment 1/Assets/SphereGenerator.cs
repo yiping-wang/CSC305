@@ -40,12 +40,15 @@ namespace Assignment01
         public Texture2D GenSphere(int width, int height)
         {
             /*
-            implement ray-sphere intersection and render a sphere with ambient, diffuse and specular lighting.
-
-            int width - width of the returned texture
-            int height - height of the return texture
-            return:
-                Texture2D - Texture2D object which contains the rendered result
+             * Summary
+             * implement ray-sphere intersection and render a sphere with ambient, diffuse and specular lighting.
+             * 
+             * Arguments:
+             * int width - width of the returned texture
+             * int height - height of the return texture
+             * 
+             * Return:
+             *   Texture2D - Texture2D object which contains the rendered result
             */
             CanvasHeight = height;
             CanvasWidth = width;
@@ -86,13 +89,18 @@ namespace Assignment01
                                         )
         {
             /*
-            Vector3 origin - origin point of the ray
-            Vector3 direction - the direction of the ray
-            Vector3 sphereCenter - center of target sphere
-            float sphereRadius - radius of target sphere
-            out float t - distance the ray travelled to hit a point
-            out Vector3 intersectNormal - normal of the hit point
-            return:
+             * Summary:
+             * Implement ray-sphere intersection
+             * 
+             * Arguments:
+             * Vector3 origin - origin point of the ray
+             * Vector3 direction - the direction of the ray
+             * Vector3 sphereCenter - center of target sphere
+             * float sphereRadius - radius of target sphere
+             * out float t - distance the ray travelled to hit a point
+             * out Vector3 intersectNormal - normal of the hit point
+             * 
+             * Return:
                 bool - indicating hit or not
             */
             float A = Vector3.Dot(rayDirection, rayDirection);
@@ -117,21 +125,59 @@ namespace Assignment01
 
         private float Lambertian(float diffuseCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 lightLocation)
         {
+            /*
+             * Summary:
+             * Implement Lambertian shading
+             * 
+             * Arguments:
+             * float diffuseCoefficient - diffuse strength
+             * Vector3 intersectNormal - the unit vector normal to the hit point
+             * Vector3 surfacePoint - the point where ray hit sphere
+             * Vector3 lightLocation - predefined light location
+             * 
+             * Return:
+             *      float - shading result
+             */
             Vector3 lightDirection = Vector3.Normalize(lightLocation - surfacePoint);
             return diffuseCoefficient * LightIntensity * Mathf.Max(0, Vector3.Dot(intersectNormal, lightDirection));
         }
 
         private float BlinnPhong(float specularCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 viewLocation, Vector3 lightLocation, float phongExponent)
         {
+            /*
+             * Summary:
+             * Implement BlinnPhong shading
+             * 
+             * Arguments:
+             * float specularCoefficient - specular strength
+             * Vector3 intersectNormal - the unit vector normal to the hit point
+             * Vector3 surfacePoint - the point where ray hit sphere
+             * Vector3 lightLocation - predefined light location
+             * Vector3 viewLocation - the location of view
+             * float phongExponent
+             * 
+             * Return:
+             *      float - shading result
+             */
             Vector3 viewDirection = Vector3.Normalize(viewLocation - surfacePoint);
             Vector3 lightDirection = Vector3.Normalize(lightLocation - surfacePoint);
             Vector3 bisectionDirection = Vector3.Normalize(viewDirection + lightDirection);
             return specularCoefficient * LightIntensity * Mathf.Pow(Mathf.Max(0, Vector3.Dot(intersectNormal, bisectionDirection)), phongExponent);
         }
 
-        private float Ambient(float AmbientCoefficient)
+        private float Ambient(float ambientCoefficient)
         {
-            return AmbientCoefficient * LightIntensity;
+            /*
+             * Summary:
+             * implement Ambient shading
+             * 
+             * Arguments:
+             * float AmbientCoefficient
+             * 
+             * Return:
+             *      float - shading result
+             */
+            return ambientCoefficient * LightIntensity;
         }
     }
 }

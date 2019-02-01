@@ -198,4 +198,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b886e8a614ccd546a4757ecff951cf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textureOnCube: {fileID: 2800000, guid: 2ab6e99956568443cbaf72219f953b45, type: 3}
+  textureOnCube: {fileID: 2800000, guid: 9b192f1fed0d0094cb14853fa9ab2716, type: 3}

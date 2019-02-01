@@ -50,14 +50,17 @@ namespace Assignment01
         public Texture2D GenBarycentricVis(int width, int height)
         {
             /*
-            implement ray-triangle intersection and 
-            visualize the barycentric coordinate on each of the triangles of a cube, 
-            with Red, Green and Blue for each coordinate.
-
-            int width - width of the returned texture
-            int height - height of the return texture
-            return:
-                Texture2D - Texture2D object which contains the rendered result
+             * Summary: 
+             * implement ray-triangle intersection and 
+             * visualize the barycentric coordinate on each of the triangles of a cube, 
+             * with Red, Green and Blue for each coordinate.
+             * 
+             * Arguments:
+             * int width - width of the returned texture
+             * int height - height of the return texture
+             * 
+             * Return:
+             *    Texture2D - Texture2D object which contains the rendered result
             */
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
@@ -91,25 +94,23 @@ namespace Assignment01
         public Texture2D GenUVMapping(int width, int height, Texture2D inputTexture)
         {
             /*
-            implement UV mapping with the calculated barycentric coordinate in the previous step, 
-            and visualize a texture image on each face of the cube.
-            (choose any texture you like)
-            we have declared textureOnCube as a public variable,
-            you can attach texture to it from Unity.
-            you can define your cube vertices and indices in this function.
-
-            int width - width of the returned texture
-            int height - height of the return texture
-            Texture2D inputTexture - the texture you need to sample from
-            return:
-                Texture2D - Texture2D object which contains the rendered result
+             * Summary:
+             * implement UV mapping with the calculated barycentric coordinate in the previous step, 
+             * and visualize a texture image on each face of the cube.
+             * 
+             * Arguments:
+             * int width - width of the returned texture
+             * int height - height of the return texture
+             * Texture2D inputTexture - the texture you need to sample from
+             * 
+             * Return:
+             *   Texture2D - Texture2D object which contains the rendered result
             */
             int imageWidth = inputTexture.width;
             int imageHeight = inputTexture.height;
             CubeResult = new Texture2D(width, height);
             CanvasHeight = height;
             CanvasWidth = width;
-
             // Texture coordinate
             Vector2 u0 = new Vector2(0, 0);
             Vector2 u1 = new Vector2(1, 0);
@@ -123,30 +124,29 @@ namespace Assignment01
                     Vector3 RayDirection = Vector3.Normalize(new Vector3((-ViewportWidth / 2) + x * ViewportWidth / CanvasWidth, (-ViewportHeight / 2) + y * ViewportHeight / CanvasHeight, 1));
                     float t;
                     Vector3 barycentricCoordinate;
+                    Vector2 uv;
                     if (IntersectTriangle(RayOrigin, RayDirection, VertexA, VertexC, VertexB, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = GetUVCoordinate(u0, v0, u1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
+                        uv = GetUVCoordinate(u0, v0, u1, barycentricCoordinate, imageWidth, imageHeight, false, false);
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexC, VertexD, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = GetUVCoordinate(u1, v0, v1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
+                        uv = GetUVCoordinate(u1, v0, v1, barycentricCoordinate, imageWidth, imageHeight, false, false);
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexD, VertexE, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = GetUVCoordinate(u0, v0, v1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
+                        uv = GetUVCoordinate(u0, v0, v1, barycentricCoordinate, imageWidth, imageHeight, true, false);
                     }
                     else if (IntersectTriangle(RayOrigin, RayDirection, VertexB, VertexE, VertexF, out t, out barycentricCoordinate))
                     {
-                        Vector2 uv = GetUVCoordinate(u0, v1, u1, barycentricCoordinate);
-                        CubeResult.SetPixel(x, y, inputTexture.GetPixel(imageWidth - Convert.ToInt32(uv.x * imageWidth), Convert.ToInt32(uv.y * imageHeight)));
+                        uv = GetUVCoordinate(u0, v1, u1, barycentricCoordinate, imageWidth, imageHeight, true, false);
                     }
                     else
                     {
                         CubeResult.SetPixel(x, y, Color.grey);
+                        continue;
                     }
+                    CubeResult.SetPixel(x, y, BilinearInterplation(uv, inputTexture));
                 }
             }
 
@@ -163,13 +163,18 @@ namespace Assignment01
                                         out Vector3 barycentricCoordinate)
         {
             /*
-            Vector3 rayOrigin - origin point of the ray
-            Vector3 rayDirection - the direction of the ray
-            vertexA, vertexB, vertexC - 3 vertices of the target triangle
-            out float t - distance the ray travelled to hit a point
-            out Vector3 barycentricCoordinate - you should know what this is
-            return:
-                bool - indicating hit or not
+             * Summary:
+             * Check whether a given ray hit a triangle or not based on barycentric coordinate
+             * 
+             * Arguments:
+             * Vector3 rayOrigin - origin point of the ray
+             * Vector3 rayDirection - the direction of the ray
+             * vertexA, vertexB, vertexC - 3 vertices of the target triangle
+             * out float t - distance the ray travelled to hit a point
+             * out Vector3 barycentricCoordinate - barycentric coordinate value
+             * 
+             * Return:
+             *   bool - indicating hit or not
             */
             float a = vertexA.x - vertexB.x;
             float b = vertexA.y - vertexB.y;
@@ -197,9 +202,70 @@ namespace Assignment01
             return true;
         }
 
-        private Vector2 GetUVCoordinate(Vector2 vertexA, Vector2 vertexB, Vector2 vertexC, Vector3 barycentricCoordinate)
+        private Vector2 GetUVCoordinate(Vector2 vertexA, Vector2 vertexB, Vector2 vertexC, Vector3 barycentricCoordinate, int imageWidth, int imageHeight, bool reflectHorz, bool reflectVert)
         {
-            return vertexA * barycentricCoordinate.x + vertexB * barycentricCoordinate.y + vertexC * barycentricCoordinate.z;
+            /*
+             * Summary:
+             * Get the UV coordinate based on barycentric coordinate and reflect image vertically or horizontally
+             * 
+             * Arguments:
+             * Vector2 vertexA, vertexB, vertexC form a barycentric coordinate system
+             * out Vector3 barycentricCoordinate - barycentric coordinate value
+             * int imageWidth - the width of image
+             * int imageHeight - the height of image
+             * bool reflectHorz - indicate whether relect the image horizontally or not
+             * bool reflectVert - indicate whether relect the image vertically or not
+             * 
+             * Return:
+                Vector2 - coordinate value in image plane
+            */
+            Vector2 uv = vertexA * barycentricCoordinate.x + vertexB * barycentricCoordinate.y + vertexC * barycentricCoordinate.z;
+            if (reflectHorz)
+            {
+                uv.x = imageWidth - uv.x * imageWidth;
+            }
+            else 
+            {
+                uv.x = uv.x * imageWidth;
+            }
+
+            if (reflectVert)
+            {
+                uv.y = imageHeight - uv.y * imageHeight;
+            }
+            else
+            {
+                uv.y = uv.y * imageHeight;
+            }
+            return uv;
+        }
+
+        private Color BilinearInterplation(Vector2 uv, Texture2D inputTexture)
+        {
+            /*
+             * Summary:
+             * Implement the Bilinear Interplation of a given pixel coordinate
+             * and return the interplated color
+             * 
+             * Arguments:
+             * Vector2 uv - the coordinate value in image plane
+             * exture2D - input image object
+             *
+             * Return:
+             *    Color - the color based on bilinear interplation at uv
+            */
+            Vector2 A = new Vector2(Mathf.Floor(uv.x), Mathf.Ceil(uv.y));
+            Vector2 B = new Vector2(Mathf.Floor(uv.x), Mathf.Floor(uv.y));
+            Vector2 C = new Vector2(Mathf.Ceil(uv.x), Mathf.Floor(uv.y));
+            Vector2 D = new Vector2(Mathf.Ceil(uv.x), Mathf.Ceil(uv.y));
+
+            float S = (uv.x - A.x) / (D.x - A.x);
+            float T = (uv.y - B.y) / (D.y - C.y);
+
+            return (1 - S) * (1 - T) * inputTexture.GetPixel(Convert.ToInt32(B.x), Convert.ToInt32(B.y)) +
+                                                          (1 - S) * T * inputTexture.GetPixel(Convert.ToInt32(A.x), Convert.ToInt32(A.y)) +
+                                                          S * (1 - T) * inputTexture.GetPixel(Convert.ToInt32(C.x), Convert.ToInt32(C.y)) +
+                                                          S * T * inputTexture.GetPixel(Convert.ToInt32(D.x), Convert.ToInt32(D.y));
         }
     }
 }
