@@ -32,9 +32,9 @@ namespace Assignment01
             RayOrigin = new Vector3(0, 0, 0);
             ViewLocation = new Vector3(0, 0, 0);
             SphereRadius = 5;
-            LightLocation = new Vector3(2 * SphereRadius, 2 * SphereRadius, -5);
+            LightLocation = new Vector3(7 * SphereRadius, 7 * SphereRadius, -5);
             ViewportWidth = 4;
-            LightIntensity = 2.5f;
+            LightIntensity = 4f;
         }
 
         public Texture2D GenSphere(int width, int height)
@@ -64,7 +64,7 @@ namespace Assignment01
                     {
                         Vector3 surfacePoint = RayOrigin + t * RayDirection;
                         float color = Lambertian(0.2f, intersectNormal, surfacePoint, LightLocation) + BlinnPhong(0.2f, intersectNormal, surfacePoint, ViewLocation, LightLocation, 10f) + Ambient(0.02f);
-                        SphereResult.SetPixel(x, y, new Color(color, 0, 0));
+                        SphereResult.SetPixel(x, y, new Color(0.7f * color, 0.7f * color, 0));
                     }
                     else
                     {
@@ -117,15 +117,16 @@ namespace Assignment01
 
         private float Lambertian(float diffuseCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 lightLocation)
         {
-            return diffuseCoefficient * LightIntensity * Mathf.Max(0, Vector3.Dot(intersectNormal, Vector3.Normalize(lightLocation - surfacePoint)));
+            Vector3 lightDirection = Vector3.Normalize(lightLocation - surfacePoint);
+            return diffuseCoefficient * LightIntensity * Mathf.Max(0, Vector3.Dot(intersectNormal, lightDirection));
         }
 
         private float BlinnPhong(float specularCoefficient, Vector3 intersectNormal, Vector3 surfacePoint, Vector3 viewLocation, Vector3 lightLocation, float phongExponent)
         {
-            return specularCoefficient * LightIntensity * 
-                Mathf.Pow(Mathf.Max(0, Vector3.Dot(intersectNormal, 
-                                                   Vector3.Normalize(Vector3.Normalize(viewLocation - surfacePoint) + 
-                                                                     Vector3.Normalize(lightLocation - surfacePoint)))), phongExponent);
+            Vector3 viewDirection = Vector3.Normalize(viewLocation - surfacePoint);
+            Vector3 lightDirection = Vector3.Normalize(lightLocation - surfacePoint);
+            Vector3 bisectionDirection = Vector3.Normalize(viewDirection + lightDirection);
+            return specularCoefficient * LightIntensity * Mathf.Pow(Mathf.Max(0, Vector3.Dot(intersectNormal, bisectionDirection)), phongExponent);
         }
 
         private float Ambient(float AmbientCoefficient)
