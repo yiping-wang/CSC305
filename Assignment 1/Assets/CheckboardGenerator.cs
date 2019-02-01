@@ -15,12 +15,6 @@ namespace Assignment01
 {
     public class CheckboardGenerator
     {
-        string name;
-        public CheckboardGenerator()
-        {
-            this.name = "CheckboardGenerator";
-        }
-
         public Texture2D GenCheckboard(int width, int height)
         {
             Texture2D checkboardResult = new Texture2D(width, height);
