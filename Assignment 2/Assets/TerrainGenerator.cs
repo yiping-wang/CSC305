@@ -26,6 +26,7 @@ public class TerrainGenerator : MonoBehaviour
         offsetX = Random.Range(0f, 1000f);
         offsetY = Random.Range(0f, 1000f);
         createGrid();
+        Plane.transform.position = new Vector3(-125, -10, 100);
     }
 
     private void createGrid()
