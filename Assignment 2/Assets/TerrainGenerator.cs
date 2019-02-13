@@ -11,12 +11,9 @@ public class TerrainGenerator : MonoBehaviour
     public float LakeLevel = 0.4f;
     public float Frequency = 4;
     public float Amplitude = 20;
-    private float offsetX;
-    private float offsetY;
-    private Vector3[] vertices;
-    private int[] triangles;
-
-    private Mesh mesh;
+    float offsetX;
+    float offsetY;
+    Mesh mesh;
     Camera Camera;
     GameObject Plane;
 
@@ -26,18 +23,19 @@ public class TerrainGenerator : MonoBehaviour
         offsetY = Random.Range(0f, 1000f);
         Plane = gameObject;
         Camera = Camera.main;
-        createGrid();
         Plane.transform.position = new Vector3(-125, -10, 100);
         Camera.transform.position = new Vector3(0, 250, -130);
         Camera.transform.localEulerAngles = new Vector3(30, 0, 0);
+
+        CreateMesh();
     }
 
-    private void createGrid()
+    private void CreateMesh()
     {
+        Vector3[] vertices;
+        int[] triangles;
         mesh = new Mesh();
-
         float[,] HeightMap = GenerateHeight();
-
         mesh.name = "Procedural Grid";
 
         vertices = new Vector3[(GridWidth) * (GridHeight)];
@@ -48,7 +46,6 @@ public class TerrainGenerator : MonoBehaviour
                 vertices[i] = new Vector3(x, HeightMap[x, y], y);
             }
         }
-
         mesh.vertices = vertices;
 
         triangles = new int[GridWidth * GridHeight * 6];
@@ -64,8 +61,8 @@ public class TerrainGenerator : MonoBehaviour
                 triangles[t + 5] = v + GridWidth + 1;
             }
         }
-
         mesh.triangles = triangles;
+
         mesh.RecalculateNormals();
         Plane.GetComponent<MeshFilter>().mesh = mesh;
     }

@@ -350,7 +350,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f771817c3dc6457f98f1e759b9b9d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 250
-  Height: 250
-  Frequency: 6
-  Amplitude: 50
+  GridWidth: 250
+  GridHeight: 250
+  LakeLevel: 0.4
+  Frequency: 3
+  Amplitude: 100
