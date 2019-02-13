@@ -352,4 +352,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Width: 250
   Height: 250
-  scale: 20
+  Frequency: 10
+  Amplitude: 10

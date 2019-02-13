@@ -8,9 +8,10 @@ public class TerrainGenerator : MonoBehaviour
 
     public int Width = 250;
     public int Height = 250;
-    public float scale = 20;
-    public float offsetX;
-    public float offsetY;
+    public float Frequency = 10;
+    public float Amplitude = 20;
+    private float offsetX;
+    private float offsetY;
 
     private Vector3[] vertices;
     private int[] triangles;
@@ -35,26 +36,28 @@ public class TerrainGenerator : MonoBehaviour
 
         mesh.name = "Procedural Grid";
 
-        vertices = new Vector3[(Width + 1) * (Height + 1)];
-        for (int i = 0, y = 0; y <= Height; y++)
+        vertices = new Vector3[(Width) * (Height)];
+        for (int i = 0, y = 0; y < Height; y++)
         {
-            for (int x = 0; x <= Width; x++, i++)
+            for (int x = 0; x < Width; x++, i++)
             {
-                vertices[i] = new Vector3(x, HeightMap[x, y] * 10, y);
+                vertices[i] = new Vector3(x, HeightMap[x, y], y);
             }
         }
 
         mesh.vertices = vertices;
 
         triangles = new int[Width * Height * 6];
-        for (int t = 0, v = 0, y = 0; y < Height; y++, v++)
+        for (int t = 0, v = 0, y = 0; y < Height - 1; y++, v++)
         {
-            for (int x = 0; x < Width; x++, t = t + 6, v++)
+            for (int x = 0; x < Width - 1; x++, t += 6, v++)
             {
                 triangles[t] = v;
-                triangles[t + 3] = triangles[t + 2] = v + 1;
-                triangles[t + 4] = triangles[t + 1] = v + Width + 1;
-                triangles[t + 5] = v + Width + 2;
+                triangles[t + 1] = v + Width;
+                triangles[t + 2] = v + 1;
+                triangles[t + 3] = v + 1;
+                triangles[t + 4] = v + Width;
+                triangles[t + 5] = v + Width + 1;
             }
         }
 
@@ -65,22 +68,14 @@ public class TerrainGenerator : MonoBehaviour
 
     private float[,] GenerateHeight()
     {
-        float[,] height = new float[Width + 1, Height + 1];
-        for (int i = 0; i <= Width; i++)
+        float[,] HeightMap = new float[Width, Height];
+        for (int j = 0; j < Height; j++)
         {
-            for (int j = 0; j <= Height; j++)
+            for (int i = 0; i < Width; i++)
             {
-                height[i, j] = CalculateHeight(i, j);
+                HeightMap[i, j] = Mathf.PerlinNoise((float)i / Width * Frequency, (float)j / Height * Frequency) * Amplitude;
             }
         }
-        return height;
+        return HeightMap;
     }
-
-    private float CalculateHeight(int x, int y)
-    {
-        float xCoord = (float)x / Width * scale + offsetX;
-        float yCoord = (float)y / Height * scale + offsetY;
-        return Mathf.PerlinNoise(xCoord, yCoord);
-    }
-
 }
