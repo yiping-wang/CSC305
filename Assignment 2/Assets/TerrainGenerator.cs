@@ -6,27 +6,30 @@ using UnityEngine;
 public class TerrainGenerator : MonoBehaviour
 {
 
-    public int Width = 250;
-    public int Height = 250;
-    public float Frequency = 10;
+    public int GridWidth = 250;
+    public int GridHeight = 250;
+    public float LakeLevel = 0.4f;
+    public float Frequency = 4;
     public float Amplitude = 20;
     private float offsetX;
     private float offsetY;
-
     private Vector3[] vertices;
     private int[] triangles;
 
     private Mesh mesh;
-
+    Camera Camera;
     GameObject Plane;
 
     void Start()
     {
-        Plane = gameObject;
         offsetX = Random.Range(0f, 1000f);
         offsetY = Random.Range(0f, 1000f);
+        Plane = gameObject;
+        Camera = Camera.main;
         createGrid();
         Plane.transform.position = new Vector3(-125, -10, 100);
+        Camera.transform.position = new Vector3(0, 250, -130);
+        Camera.transform.localEulerAngles = new Vector3(30, 0, 0);
     }
 
     private void createGrid()
@@ -37,10 +40,10 @@ public class TerrainGenerator : MonoBehaviour
 
         mesh.name = "Procedural Grid";
 
-        vertices = new Vector3[(Width) * (Height)];
-        for (int i = 0, y = 0; y < Height; y++)
+        vertices = new Vector3[(GridWidth) * (GridHeight)];
+        for (int i = 0, y = 0; y < GridHeight; y++)
         {
-            for (int x = 0; x < Width; x++, i++)
+            for (int x = 0; x < GridWidth; x++, i++)
             {
                 vertices[i] = new Vector3(x, HeightMap[x, y], y);
             }
@@ -48,17 +51,17 @@ public class TerrainGenerator : MonoBehaviour
 
         mesh.vertices = vertices;
 
-        triangles = new int[Width * Height * 6];
-        for (int t = 0, v = 0, y = 0; y < Height - 1; y++, v++)
+        triangles = new int[GridWidth * GridHeight * 6];
+        for (int t = 0, v = 0, y = 0; y < GridHeight - 1; y++, v++)
         {
-            for (int x = 0; x < Width - 1; x++, t += 6, v++)
+            for (int x = 0; x < GridWidth - 1; x++, t += 6, v++)
             {
                 triangles[t] = v;
-                triangles[t + 1] = v + Width;
+                triangles[t + 1] = v + GridWidth;
                 triangles[t + 2] = v + 1;
                 triangles[t + 3] = v + 1;
-                triangles[t + 4] = v + Width;
-                triangles[t + 5] = v + Width + 1;
+                triangles[t + 4] = v + GridWidth;
+                triangles[t + 5] = v + GridWidth + 1;
             }
         }
 
@@ -69,12 +72,16 @@ public class TerrainGenerator : MonoBehaviour
 
     private float[,] GenerateHeight()
     {
-        float[,] HeightMap = new float[Width, Height];
-        for (int j = 0; j < Height; j++)
+        float[,] HeightMap = new float[GridWidth, GridHeight];
+        for (int j = 0; j < GridHeight; j++)
         {
-            for (int i = 0; i < Width; i++)
+            for (int i = 0; i < GridWidth; i++)
             {
-                HeightMap[i, j] = Mathf.PerlinNoise((float)i / Width * Frequency, (float)j / Height * Frequency) * Amplitude;
+                HeightMap[i, j] = Mathf.PerlinNoise((float)i / GridWidth * Frequency + offsetX, (float)j / 
+                                                    GridHeight * Frequency + offsetY) * Amplitude;
+                if (HeightMap[i, j] < LakeLevel * Amplitude) {
+                    HeightMap[i, j] = LakeLevel * Amplitude;
+                }
             }
         }
         return HeightMap;
