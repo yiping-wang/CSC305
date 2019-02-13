@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
  
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class TerrainGenerator : MonoBehaviour
@@ -10,6 +9,8 @@ public class TerrainGenerator : MonoBehaviour
     public int Width = 250;
     public int Height = 250;
     public float scale = 20;
+    public float offsetX;
+    public float offsetY;
 
     private Vector3[] vertices;
     private int[] triangles;
@@ -21,13 +22,14 @@ public class TerrainGenerator : MonoBehaviour
     void Start()
     {
         Plane = gameObject;
+        offsetX = Random.Range(0f, 1000f);
+        offsetY = Random.Range(0f, 1000f);
         createGrid();
     }
 
     private void createGrid()
     {
         mesh = new Mesh();
-        System.Random rand = new System.Random();
 
         float[,] HeightMap = GenerateHeight();
 
@@ -76,8 +78,8 @@ public class TerrainGenerator : MonoBehaviour
 
     private float CalculateHeight(int x, int y)
     {
-        float xCoord = (float)x / Width * scale;
-        float yCoord = (float)y / Height * scale;
+        float xCoord = (float)x / Width * scale + offsetX;
+        float yCoord = (float)y / Height * scale + offsetY;
         return Mathf.PerlinNoise(xCoord, yCoord);
     }
 
