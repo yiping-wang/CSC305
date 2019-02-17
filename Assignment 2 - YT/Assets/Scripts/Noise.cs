@@ -30,7 +30,7 @@ public static class Noise {
 			for (int x = 0; x < mapWidth; x++) {
 
                 float amplitude = 1f;
-                float frequency = 1f;
+                float frequency = 0.2f;
                 float noiseHeight = 0;
 
                 for (int i = 0; i < octaves; i++)
