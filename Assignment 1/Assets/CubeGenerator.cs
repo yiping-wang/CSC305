@@ -29,7 +29,7 @@ namespace Assignment01
         float ViewportHeight;
         int CanvasWidth;
         int CanvasHeight;
-
+        int print = 1219000;
         public CubeGenerator()
         {
             RayOrigin = new Vector3(0, 0, 0);

@@ -67,7 +67,7 @@ namespace Assignment01
                     {
                         Vector3 surfacePoint = RayOrigin + t * RayDirection;
                         float color = Lambertian(0.2f, intersectNormal, surfacePoint, LightLocation) + BlinnPhong(0.2f, intersectNormal, surfacePoint, ViewLocation, LightLocation, 10f) + Ambient(0.02f);
-                        SphereResult.SetPixel(x, y, new Color(color, color, 0));
+                        SphereResult.SetPixel(x, y, new Color(color, 0.8f * color, color));
                     }
                     else
                     {
