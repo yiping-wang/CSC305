@@ -16,28 +16,26 @@ public class TerrianGenerator : MonoBehaviour {
 	public const int terrianSize = 241;
 	[Range(0,6)]
 	public int detailLevel;
-	public float noiseScale;
+    public TerrianAsset terrianAsset;
+    public NoiseAsset noiseAsset;
+    public TextureAsset textureAsset;
+    public Material terrianMaterial;
 
-	public int octaves;
-	[Range(0,1)]
-	public float persistance;
-	public float lacunarity;
-
-	public int seed;
-	public Vector2 offset;
-
-	public float maxHeight;
 	public bool autoUpdate;
 	public TerrainType[] regions;
 
 	Queue<DataThreadInfo<TerrianData>> terrianDataThreadInfoQueue = new Queue<DataThreadInfo<TerrianData>>();
 	Queue<DataThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<DataThreadInfo<MeshData>>();
 
+    void OnTextureUpdated()
+    {
+        textureAsset.ApplyToMaterial(terrianMaterial);
+    }
 
     public void DrawTerrianInEditor() {
 		TerrianData terrianData = GenerateTerrianData (Vector2.zero);
 		TerrianDisplay display = FindObjectOfType<TerrianDisplay> ();
-        display.DrawMesh(MeshGenerator.GenerateTerrainMesh(terrianData.noise, maxHeight, regions[1].height, detailLevel), TextureGenerator.TextureFromColorMap(terrianData.color, terrianSize));
+        display.DrawMesh(MeshGenerator.GenerateTerrainMesh(terrianData.noise, terrianAsset.maxHeight, regions[1].height, detailLevel), TextureGenerator.TextureFromColorMap(terrianData.color, terrianSize));
 	}
 
 	public void RequestTerrianData(Vector2 center, Action<TerrianData> callback) 
@@ -67,7 +65,7 @@ public class TerrianGenerator : MonoBehaviour {
 
 	void MeshDataThread(TerrianData terrianData, int spawnTerrianDetailLevel, Action<MeshData> callback) 
     {
-        MeshData meshData = MeshGenerator.GenerateTerrainMesh(terrianData.noise, maxHeight, regions[1].height, spawnTerrianDetailLevel);
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(terrianData.noise, terrianAsset.maxHeight, regions[1].height, spawnTerrianDetailLevel);
 		lock (meshDataThreadInfoQueue) 
         {
             meshDataThreadInfoQueue.Enqueue(new DataThreadInfo<MeshData>(callback, meshData));
@@ -95,7 +93,7 @@ public class TerrianGenerator : MonoBehaviour {
 	}
 
 	TerrianData GenerateTerrianData(Vector2 center) {
-		float[,] noise = Noise.GenerateNoiseMap(terrianSize, seed, noiseScale, octaves, persistance, lacunarity, center + offset);
+		float[,] noise = Noise.GenerateNoiseMap(terrianSize, noiseAsset.seed, noiseAsset.noiseScale, noiseAsset.octaves, noiseAsset.persistance, noiseAsset.lacunarity, center + noiseAsset.offset);
 		Color[] color = new Color[terrianSize * terrianSize];
 		for (int y = 0; y < terrianSize; y++) 
         {
