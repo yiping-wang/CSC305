@@ -96,27 +96,32 @@ public class TerrianGenerator : MonoBehaviour {
 
 	TerrianData GenerateTerrianData(Vector2 center) {
 		float[,] noise = Noise.GenerateNoiseMap(terrianSize, seed, noiseScale, octaves, persistance, lacunarity, center + offset);
-
 		Color[] color = new Color[terrianSize * terrianSize];
 		for (int y = 0; y < terrianSize; y++) 
         {
 			for (int x = 0; x < terrianSize; x++) 
             {
                 float currentHeight = noise[x, y];
-				for (int i = 0; i < regions.Length; i++) 
+                Color regionColor = new Color();
+                if (currentHeight < regions[1].height)
                 {
-					if (currentHeight >= regions [i].height) 
-                    {
-                        color[y * terrianSize + x] = regions[i].color;
-					} 
-                    else 
-                    {
-						break;
-					}
-				}
+                    regionColor = regions[0].color;
+                }
+                else if(currentHeight >= regions[1].height && currentHeight < regions[2].height)
+                {
+                    regionColor = regions[1].color;
+                }
+                else if (currentHeight >= regions[2].height && currentHeight < regions[3].height)
+                {
+                    regionColor = regions[2].color;
+                }
+                else
+                {
+                    regionColor = regions[3].color;
+                }
+                color[y * terrianSize + x] = regionColor;
 			}
 		}
-
         return new TerrianData(noise, color);
 	}
 }

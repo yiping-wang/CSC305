@@ -11,7 +11,6 @@ public struct LODInfo
 
 public class InfiniteTerrain : MonoBehaviour {
 
-	const float scale = 2f;
 	const float viewerMoveDistanceForUpdatingTerrian = 25f;
 	const float squareViewerMoveDistanceForUpdatingTerrian = viewerMoveDistanceForUpdatingTerrian * viewerMoveDistanceForUpdatingTerrian;
 
@@ -44,7 +43,7 @@ public class InfiniteTerrain : MonoBehaviour {
 
 	void Update() 
     {
-        viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / scale;
+        viewerPosition = new Vector2(viewer.position.x, viewer.position.z);
 
 		if ((prevViewPosition - viewerPosition).sqrMagnitude > squareViewerMoveDistanceForUpdatingTerrian) 
         {
@@ -117,9 +116,9 @@ public class InfiniteTerrain : MonoBehaviour {
 			meshFilter = meshObject.AddComponent<MeshFilter>();
             meshCollider = meshObject.AddComponent<MeshCollider>();
 			meshRenderer.material = material;
-            meshObject.transform.position = worldPosition * scale;
+            meshObject.transform.position = worldPosition;
 			meshObject.transform.parent = parent;
-			meshObject.transform.localScale = Vector3.one * scale;
+			meshObject.transform.localScale = Vector3.one;
 			SetVisible(false);
 			meshDetailLevel = new MeshDetailLevel[detailLevels.Length];
 			for (int i = 0; i < detailLevels.Length; i++) {

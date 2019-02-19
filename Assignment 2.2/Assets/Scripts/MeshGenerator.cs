@@ -10,7 +10,7 @@ public static class MeshGenerator {
 		float offsetX = (terrianSize - 1) / -2f;
         float offsetY = (terrianSize - 1) / 2f;
 
-		int meshVertexStep = (levelOfDetail == 0)?1:levelOfDetail * 2;
+        int meshVertexStep = (levelOfDetail == 0) ? 1 : levelOfDetail * 2;
 		int numVerticesEachLine = (terrianSize - 1) / meshVertexStep + 1;
 
 		MeshData meshData = new MeshData (numVerticesEachLine, numVerticesEachLine);
@@ -22,7 +22,7 @@ public static class MeshGenerator {
                 if (regionHeight < waterHeight) {
                     regionHeight = waterHeight;
                 }
-                meshData.vertices [vertexIndex] = new Vector3 (offsetX + x, regionHeight, offsetY - y);
+                meshData.vertices[vertexIndex] = new Vector3(offsetX + x, regionHeight, offsetY - y);
                 meshData.uvs [vertexIndex] = new Vector2 (x / (float)terrianSize, y / (float)terrianSize);
 
                 if (x < terrianSize - 1 && y < terrianSize - 1) {
