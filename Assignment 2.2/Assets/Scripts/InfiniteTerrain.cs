@@ -11,7 +11,7 @@ public struct LODInfo
 
 public class InfiniteTerrain : MonoBehaviour {
 
-	const float scale = 5f;
+	const float scale = 2f;
 	const float viewerMoveDistanceForUpdatingTerrian = 25f;
 	const float squareViewerMoveDistanceForUpdatingTerrian = viewerMoveDistanceForUpdatingTerrian * viewerMoveDistanceForUpdatingTerrian;
 
@@ -24,7 +24,7 @@ public class InfiniteTerrain : MonoBehaviour {
 	public static Vector2 viewerPosition;
 	Vector2 prevViewPosition;
 
-	static MapGenerator mapGenerator;
+	static TerrianGenerator terrianGenerator;
 	int terrianSize;
 	int chunksVisibleInViewDst;
 
@@ -33,10 +33,10 @@ public class InfiniteTerrain : MonoBehaviour {
 
 	void Start() 
     {
-        mapGenerator = FindObjectOfType<MapGenerator>();
+        terrianGenerator = FindObjectOfType<TerrianGenerator>();
 
         maxVisibleDistance = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
-		terrianSize = MapGenerator.terrianSize - 1;
+		terrianSize = TerrianGenerator.terrianSize - 1;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxVisibleDistance / terrianSize);
 
         UpdateVisibleChunks();
@@ -72,7 +72,7 @@ public class InfiniteTerrain : MonoBehaviour {
 
 				if (terrainChunkDictionary.ContainsKey (viewedChunkCoord)) 
                 {
-                    terrainChunkDictionary[viewedChunkCoord].UpdateTerrainChunk();
+                    terrainChunkDictionary[viewedChunkCoord].UpdateTerrainSpawn();
 				} 
                 else
                 {
@@ -89,6 +89,7 @@ public class InfiniteTerrain : MonoBehaviour {
 		Bounds bounds;
 		MeshRenderer meshRenderer;
 		MeshFilter meshFilter;
+        MeshCollider meshCollider;
 		LODInfo[] detailLevels;
 		MeshDetailLevel[] meshDetailLevel;
 		TerrianData terrianData;
@@ -114,6 +115,7 @@ public class InfiniteTerrain : MonoBehaviour {
 			meshObject = new GameObject("Terrain");
 			meshRenderer = meshObject.AddComponent<MeshRenderer>();
 			meshFilter = meshObject.AddComponent<MeshFilter>();
+            meshCollider = meshObject.AddComponent<MeshCollider>();
 			meshRenderer.material = material;
             meshObject.transform.position = worldPosition * scale;
 			meshObject.transform.parent = parent;
@@ -121,20 +123,20 @@ public class InfiniteTerrain : MonoBehaviour {
 			SetVisible(false);
 			meshDetailLevel = new MeshDetailLevel[detailLevels.Length];
 			for (int i = 0; i < detailLevels.Length; i++) {
-				meshDetailLevel[i] = new MeshDetailLevel(detailLevels[i].lod, UpdateTerrainChunk, mapGenerator);
+				meshDetailLevel[i] = new MeshDetailLevel(detailLevels[i].lod, UpdateTerrainSpawn, terrianGenerator);
 			}
-            mapGenerator.RequestTerrianData(terrianPosition, OnTerrianDataReceived);
+            terrianGenerator.RequestTerrianData(terrianPosition, OnTerrianDataReceived);
 		}
 
 		void OnTerrianDataReceived(TerrianData terrianData) {
 			this.terrianData = terrianData;
 			terrianDataReceived = true;
-            Texture2D texture = TextureGenerator.TextureFromColorMap(terrianData.color, MapGenerator.terrianSize);
+            Texture2D texture = TextureGenerator.TextureFromColorMap(terrianData.color, TerrianGenerator.terrianSize);
 			meshRenderer.material.mainTexture = texture;
-            UpdateTerrainChunk();
+            UpdateTerrainSpawn();
 		}
 
-		public void UpdateTerrainChunk()
+		public void UpdateTerrainSpawn()
         {
 			if (terrianDataReceived) 
             {
@@ -163,6 +165,7 @@ public class InfiniteTerrain : MonoBehaviour {
                         {
                             previousDetailLevelIndex = detailLevelIndex;
                             meshFilter.mesh = meshDetailLevelObj.mesh;
+                            meshCollider.sharedMesh = meshDetailLevelObj.mesh;
 						} 
                         else if (!meshDetailLevelObj.hasRequestedMesh)
                         {

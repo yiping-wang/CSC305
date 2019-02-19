@@ -8,11 +8,11 @@ public class MeshData
 
     int triangleIndex;
 
-    public MeshData(int meshterrianSize, int meshHeight)
+    public MeshData(int meshWidth, int meshLength)
     {
-        vertices = new Vector3[meshterrianSize * meshHeight];
-        uvs = new Vector2[meshterrianSize * meshHeight];
-        triangles = new int[(meshterrianSize - 1) * (meshHeight - 1) * 6];
+        vertices = new Vector3[meshWidth * meshLength];
+        uvs = new Vector2[meshWidth * meshLength];
+        triangles = new int[(meshWidth - 1) * (meshLength - 1) * 6];
     }
 
     public void AddTriangle(int a, int b, int c)
@@ -32,5 +32,5 @@ public class MeshData
         mesh.RecalculateNormals();
         return mesh;
     }
-
 }
+

@@ -9,11 +9,11 @@ public class MeshDetailLevel
     public bool hasMesh;
     int level;
     System.Action updateCallback;
-    MapGenerator mapGenerator;
+    TerrianGenerator terrianGenerator;
 
-    public MeshDetailLevel(int level, System.Action updateCallback, MapGenerator mapGenerator)
+    public MeshDetailLevel(int level, System.Action updateCallback, TerrianGenerator terrianGenerator)
     {
-        this.mapGenerator = mapGenerator;
+        this.terrianGenerator = terrianGenerator;
         this.level = level;
         this.updateCallback = updateCallback;
     }
@@ -28,6 +28,6 @@ public class MeshDetailLevel
     public void RequestMesh(TerrianData terrianData)
     {
         hasRequestedMesh = true;
-        mapGenerator.RequestMeshData(terrianData, level, OnMeshDataReceived);
+        terrianGenerator.RequestMeshData(terrianData, level, OnMeshDataReceived);
     }
 }
