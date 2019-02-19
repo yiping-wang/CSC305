@@ -11,9 +11,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 401091c738fe00c44911cf4ab9574775, type: 3}
   m_Name: Noise
   m_EditorClassIdentifier: 
-  noiseScale: 0
-  octaves: 0
-  persistance: 0
-  lacunarity: 0
+  noiseScale: 100
+  octaves: 4
+  persistance: 0.5
+  lacunarity: 2
   seed: 0
-  offset: {x: 0, y: 0}
+  offset: {x: 194, y: 307}
