@@ -6,4 +6,5 @@ public class Models : MonoBehaviour
 {
     public GameObject[] trees;
     public GameObject[] boats;
+    public GameObject snowman;
 }

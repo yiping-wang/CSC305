@@ -10,6 +10,7 @@ public class MeshDetailLevel
     int level;
     System.Action updateCallback;
     TerrianGenerator terrianGenerator;
+    public GameObject[] gameObjects;
 
     public MeshDetailLevel(int level, System.Action updateCallback, TerrianGenerator terrianGenerator)
     {

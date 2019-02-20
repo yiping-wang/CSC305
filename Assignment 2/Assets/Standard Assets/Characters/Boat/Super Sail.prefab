@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 23513620844905280}
   - component: {fileID: 95699076587945624}
   m_Layer: 0
-  m_Name: super_sail
+  m_Name: Super Sail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

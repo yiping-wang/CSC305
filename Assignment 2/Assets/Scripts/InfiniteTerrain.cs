@@ -145,8 +145,11 @@ public class InfiniteTerrain : MonoBehaviour {
                 Vector3[] normals = mesh.normals;
                 System.Random rand = new System.Random();
                 System.Random boatGeneration = new System.Random(10);
-
                 int index = 0;
+                float maxSnowManHeight = float.MinValue;
+                Quaternion snowManRotation = Quaternion.identity;
+                Vector3 snowManPos = new Vector3();
+
                 foreach(Vector3 vertex in vertices)
                 {
                     if (vertex.y > 70 && vertex.y < 75)
@@ -168,8 +171,20 @@ public class InfiniteTerrain : MonoBehaviour {
                             boat.transform.parent = meshObject.transform;
                         }
                     }
+
+                    if (vertex.y > maxSnowManHeight)
+                    {
+                        snowManPos = new Vector3(vertex.x + terrianPosition.x, vertex.y, vertex.z + terrianPosition.y);
+                        maxSnowManHeight = vertex.y;
+                        snowManRotation = Quaternion.FromToRotation(Vector3.up, normals[index]);
+                    }
                     index++;
                 }
+
+                var snowman = Instantiate(models.snowman, snowManPos, Quaternion.identity);
+                snowman.transform.localScale = Vector3.one * 5;
+                snowman.transform.rotation = snowManRotation;
+                snowman.transform.parent = meshObject.transform;
             }
         }
 
@@ -203,14 +218,15 @@ public class InfiniteTerrain : MonoBehaviour {
                             previousDetailLevelIndex = detailLevelIndex;
                             meshFilter.mesh = meshDetailLevelObj.mesh;
                             meshCollider.sharedMesh = meshDetailLevelObj.mesh;
-						} 
+                        } 
                         else if (!meshDetailLevelObj.hasRequestedMesh)
                         {
                             meshDetailLevelObj.RequestMesh(terrianData);
-						}
-
+                            GenerateModels(terrianData, meshDetailLevelObj.mesh);
+                        }
                         GenerateModels(terrianData, meshDetailLevelObj.mesh);
-					}
+                    }
+
 
                     terrainChunksVisibleLastUpdate.Add(this);
 				}
