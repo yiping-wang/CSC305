@@ -17,6 +17,7 @@
             const static float minHeight = 50;
             const static float maxHeight = 100;
 
+			float sunIntensity;
 			float3 baseTints[numLayers];
 			float baseStartLevels[numLayers];
 			float baseBlends[numLayers];
@@ -43,6 +44,7 @@
 			}
 
 			void surf(Input IN, inout SurfaceOutputStandard o) {
+				float3 viewDir = UNITY_MATRIX_IT_MV[2].xyz;
 				float heightLevel = inverseLinearInterp(minHeight, maxHeight, IN.worldPos.y);
 				float3 blendAxes = abs(IN.worldNormal);
 				blendAxes /= blendAxes.x + blendAxes.y + blendAxes.z;
@@ -50,6 +52,7 @@
 					float drawStrength = inverseLinearInterp(-baseBlends[i] / 2 - epsilon, baseBlends[i] / 2, heightLevel - baseStartLevels[i]);
 					float3 textureColor = calculateTextureColor(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1 - baseColorStrength[i]);
 					o.Albedo = o.Albedo * (1 - drawStrength) + (baseTints[i] + textureColor) * drawStrength;
+					// o.Albedo += o.Albedo * sunIntensity * pow((IN.worldPos.x * viewDir.x + IN.worldPos.y * viewDir.y + IN.worldPos.z * viewDir.z), 100);
 				}
 			}
 			ENDCG
