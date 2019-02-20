@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using System.Threading;
+﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 
 public class TerrianGenerator : MonoBehaviour {
 	public const int terrianSize = 241;

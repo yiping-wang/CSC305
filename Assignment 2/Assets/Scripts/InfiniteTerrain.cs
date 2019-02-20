@@ -10,6 +10,8 @@ public struct LODInfo
 }
 
 public class InfiniteTerrain : MonoBehaviour {
+    public GameObject[] trees;
+
 	const float viewerMoveDistanceForUpdatingTerrian = 25f;
 	const float squareViewerMoveDistanceForUpdatingTerrian = viewerMoveDistanceForUpdatingTerrian * viewerMoveDistanceForUpdatingTerrian;
 
@@ -17,7 +19,7 @@ public class InfiniteTerrain : MonoBehaviour {
 	public static float maxVisibleDistance;
 
 	public Transform viewer;
-	public Material mapMaterial;
+	public Material terrianMaterial;
 
 	public static Vector2 viewerPosition;
 	Vector2 prevViewPosition;
@@ -74,7 +76,7 @@ public class InfiniteTerrain : MonoBehaviour {
 				} 
                 else
                 {
-                    terrainChunkDictionary.Add(viewedChunkCoord, new SpawnTerrian(viewedChunkCoord, terrianSize, detailLevels, transform, mapMaterial));
+                    terrainChunkDictionary.Add(viewedChunkCoord, new SpawnTerrian(viewedChunkCoord, terrianSize, detailLevels, transform, terrianMaterial, trees));
 				}
 			}
 		}
@@ -83,6 +85,7 @@ public class InfiniteTerrain : MonoBehaviour {
 	public class SpawnTerrian
     {
 		GameObject meshObject;
+        GameObject[] trees;
 		Vector2 terrianPosition;
 		Bounds bounds;
 		MeshRenderer meshRenderer;
@@ -104,8 +107,9 @@ public class InfiniteTerrain : MonoBehaviour {
             return meshObject.activeSelf;
         }
 
-		public SpawnTerrian(Vector2 terrianCoord, int terrianSize, LODInfo[] detailLevels, Transform parent, Material material) 
+		public SpawnTerrian(Vector2 terrianCoord, int terrianSize, LODInfo[] detailLevels, Transform parent, Material material, GameObject[] trees) 
         {
+            this.trees = trees;
 			this.detailLevels = detailLevels;
             terrianPosition = terrianCoord * terrianSize;
             bounds = new Bounds(terrianPosition, Vector2.one * terrianSize);
@@ -120,18 +124,42 @@ public class InfiniteTerrain : MonoBehaviour {
 			meshObject.transform.localScale = Vector3.one;
 			SetVisible(false);
 			meshDetailLevel = new MeshDetailLevel[detailLevels.Length];
-			for (int i = 0; i < detailLevels.Length; i++) {
+			for (int i = 0; i < detailLevels.Length; i++)
+            {
 				meshDetailLevel[i] = new MeshDetailLevel(detailLevels[i].lod, UpdateTerrainSpawn, terrianGenerator);
 			}
             terrianGenerator.RequestTerrianData(terrianPosition, OnTerrianDataReceived);
 		}
 
-		void OnTerrianDataReceived(TerrianData terrianData) {
+		void OnTerrianDataReceived(TerrianData terrianData)
+        {
 			this.terrianData = terrianData;
 			terrianDataReceived = true;
 
             UpdateTerrainSpawn();
 		}
+
+        void GenerateTrees(TerrianData terrianData, Mesh mesh)
+        {
+            if (mesh != null)
+            {
+                Vector3[] vertices = mesh.vertices;
+                Vector3[] normals = mesh.normals;
+                System.Random rand = new System.Random();
+                int index = 0;
+                foreach(Vector3 vertex in vertices)
+                {
+                    if (vertex.y > 70 && vertex.y < 75)
+                    {
+                        var tree = Instantiate(trees[rand.Next(0,3)], new Vector3(vertex.x + terrianPosition.x, vertex.y, vertex.z + terrianPosition.y), Quaternion.identity);
+                        tree.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                        tree.transform.rotation = Quaternion.FromToRotation(Vector3.up, normals[index]);
+                        tree.transform.parent = meshObject.transform;
+                    }
+                    index++;
+                }
+            }
+        }
 
 		public void UpdateTerrainSpawn()
         {
@@ -168,11 +196,13 @@ public class InfiniteTerrain : MonoBehaviour {
                         {
                             meshDetailLevelObj.RequestMesh(terrianData);
 						}
+
+                        GenerateTrees(terrianData, meshDetailLevelObj.mesh);
 					}
 
                     terrainChunksVisibleLastUpdate.Add(this);
 				}
-				SetVisible (visible);
+                SetVisible(visible);
 			}
 		}
 	}

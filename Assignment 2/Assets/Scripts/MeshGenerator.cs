@@ -16,25 +16,25 @@ public static class MeshGenerator {
 		MeshData meshData = new MeshData (numVerticesEachLine, numVerticesEachLine);
 		int vertexIndex = 0;
 
-        for (int y = 0; y < terrianSize; y += meshVertexStep) {
-			for (int x = 0; x < terrianSize; x += meshVertexStep) {
+        for (int y = 0; y < terrianSize; y += meshVertexStep)
+        {
+			for (int x = 0; x < terrianSize; x += meshVertexStep)
+            {
                 float regionHeight = perlinNoise[x, y] * maxHeight;
-                if (regionHeight < waterHeight) {
+                if (regionHeight < waterHeight)
+                {
                     regionHeight = waterHeight;
                 }
                 meshData.vertices[vertexIndex] = new Vector3(offsetX + x, regionHeight, offsetY - y);
-                meshData.uvs [vertexIndex] = new Vector2 (x / (float)terrianSize, y / (float)terrianSize);
-
-                if (x < terrianSize - 1 && y < terrianSize - 1) {
-					meshData.AddTriangle (vertexIndex, vertexIndex + numVerticesEachLine + 1, vertexIndex + numVerticesEachLine);
-					meshData.AddTriangle (vertexIndex + numVerticesEachLine + 1, vertexIndex, vertexIndex + 1);
+                meshData.uvs[vertexIndex] = new Vector2(x / (float)terrianSize, y / (float)terrianSize);
+                if (x < terrianSize - 1 && y < terrianSize - 1)
+                {
+                    meshData.AddTriangle(vertexIndex, vertexIndex + numVerticesEachLine + 1, vertexIndex + numVerticesEachLine);
+                    meshData.AddTriangle(vertexIndex + numVerticesEachLine + 1, vertexIndex, vertexIndex + 1);
 				}
-
 				vertexIndex++;
 			}
 		}
-
 		return meshData;
-
 	}
 }
