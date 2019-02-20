@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu()]
-public class TerrianAsset : ScriptableObject {
+public class TerrianAsset : UpdatableData
+{
     public float maxHeight;
+    public float minHeight;
 }

@@ -32,10 +32,18 @@ public class TerrianGenerator : MonoBehaviour {
         textureAsset.ApplyToMaterial(terrianMaterial);
     }
 
+    void OnValueUpdate()
+    {
+        if (!Application.isPlaying)
+        {
+            DrawTerrianInEditor();
+        }
+    }
+
     public void DrawTerrianInEditor() {
 		TerrianData terrianData = GenerateTerrianData (Vector2.zero);
 		TerrianDisplay display = FindObjectOfType<TerrianDisplay> ();
-        display.DrawMesh(MeshGenerator.GenerateTerrainMesh(terrianData.noise, terrianAsset.maxHeight, regions[1].height, detailLevel), TextureGenerator.TextureFromColorMap(terrianData.color, terrianSize));
+        display.DrawMesh(MeshGenerator.GenerateTerrainMesh(terrianData.noise, terrianAsset.maxHeight, regions[1].height, detailLevel));
 	}
 
 	public void RequestTerrianData(Vector2 center, Action<TerrianData> callback) 
@@ -94,32 +102,26 @@ public class TerrianGenerator : MonoBehaviour {
 
 	TerrianData GenerateTerrianData(Vector2 center) {
 		float[,] noise = Noise.GenerateNoiseMap(terrianSize, noiseAsset.seed, noiseAsset.noiseScale, noiseAsset.octaves, noiseAsset.persistance, noiseAsset.lacunarity, center + noiseAsset.offset);
-		Color[] color = new Color[terrianSize * terrianSize];
-		for (int y = 0; y < terrianSize; y++) 
-        {
-			for (int x = 0; x < terrianSize; x++) 
-            {
-                float currentHeight = noise[x, y];
-                Color regionColor = new Color();
-                if (currentHeight < regions[1].height)
-                {
-                    regionColor = regions[0].color;
-                }
-                else if(currentHeight >= regions[1].height && currentHeight < regions[2].height)
-                {
-                    regionColor = regions[1].color;
-                }
-                else if (currentHeight >= regions[2].height && currentHeight < regions[3].height)
-                {
-                    regionColor = regions[2].color;
-                }
-                else
-                {
-                    regionColor = regions[3].color;
-                }
-                color[y * terrianSize + x] = regionColor;
-			}
-		}
-        return new TerrianData(noise, color);
+        textureAsset.UpdateMeshHeight(terrianMaterial, terrianAsset.minHeight, terrianAsset.maxHeight);
+        return new TerrianData(noise);
 	}
+
+    private void OnValidate()
+    {
+        if (terrianAsset != null)
+        {
+            terrianAsset.OnValuesUpdated -= OnValueUpdate;
+            terrianAsset.OnValuesUpdated += OnValueUpdate;
+        }
+        if (noiseAsset != null)
+        {
+            noiseAsset.OnValuesUpdated -= OnValueUpdate;
+            noiseAsset.OnValuesUpdated += OnValueUpdate;
+        }
+        if (textureAsset != null)
+        {
+            textureAsset.OnValuesUpdated -= OnTextureUpdated;
+            textureAsset.OnValuesUpdated += OnTextureUpdated;
+        }
+    }
 }

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu()]
-public class NoiseAsset : ScriptableObject{
+public class NoiseAsset : UpdatableData
+{
     public float noiseScale;
     public int octaves;
     [Range(0, 1)]

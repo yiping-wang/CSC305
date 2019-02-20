@@ -130,8 +130,7 @@ public class InfiniteTerrain : MonoBehaviour {
 		void OnTerrianDataReceived(TerrianData terrianData) {
 			this.terrianData = terrianData;
 			terrianDataReceived = true;
-            Texture2D texture = TextureGenerator.TextureFromColorMap(terrianData.color, TerrianGenerator.terrianSize);
-			meshRenderer.material.mainTexture = texture;
+
             UpdateTerrainSpawn();
 		}
 

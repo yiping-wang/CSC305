@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Name: Terrian
   m_EditorClassIdentifier: 
   maxHeight: 100
+  minHeight: 50

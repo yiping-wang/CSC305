@@ -7,9 +7,8 @@ public class TerrianDisplay : MonoBehaviour {
 	public MeshFilter meshFilter;
 	public MeshRenderer meshRenderer;
 
-	public void DrawMesh(MeshData meshData, Texture2D texture) {
+	public void DrawMesh(MeshData meshData) {
 		meshFilter.sharedMesh = meshData.CreateMesh ();
-		meshRenderer.sharedMaterial.mainTexture = texture;
 	}
 
 }

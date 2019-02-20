@@ -3,11 +3,9 @@
 public struct TerrianData
 {
     public readonly float[,] noise;
-    public readonly Color[] color;
 
-    public TerrianData(float[,] noise, Color[] color)
+    public TerrianData(float[,] noise)
     {
         this.noise = noise;
-        this.color = color;
     }
 }
