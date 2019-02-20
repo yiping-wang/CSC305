@@ -10,8 +10,6 @@ public struct LODInfo
 }
 
 public class InfiniteTerrain : MonoBehaviour {
-    public GameObject[] trees;
-
 	const float viewerMoveDistanceForUpdatingTerrian = 25f;
 	const float squareViewerMoveDistanceForUpdatingTerrian = viewerMoveDistanceForUpdatingTerrian * viewerMoveDistanceForUpdatingTerrian;
 
@@ -76,7 +74,7 @@ public class InfiniteTerrain : MonoBehaviour {
 				} 
                 else
                 {
-                    terrainChunkDictionary.Add(viewedChunkCoord, new SpawnTerrian(viewedChunkCoord, terrianSize, detailLevels, transform, terrianMaterial, trees));
+                    terrainChunkDictionary.Add(viewedChunkCoord, new SpawnTerrian(viewedChunkCoord, terrianSize, detailLevels, transform, terrianMaterial));
 				}
 			}
 		}
@@ -85,8 +83,8 @@ public class InfiniteTerrain : MonoBehaviour {
 	public class SpawnTerrian
     {
 		GameObject meshObject;
-        GameObject[] trees;
-		Vector2 terrianPosition;
+        Models models;
+        Vector2 terrianPosition;
 		Bounds bounds;
 		MeshRenderer meshRenderer;
 		MeshFilter meshFilter;
@@ -107,9 +105,9 @@ public class InfiniteTerrain : MonoBehaviour {
             return meshObject.activeSelf;
         }
 
-		public SpawnTerrian(Vector2 terrianCoord, int terrianSize, LODInfo[] detailLevels, Transform parent, Material material, GameObject[] trees) 
+		public SpawnTerrian(Vector2 terrianCoord, int terrianSize, LODInfo[] detailLevels, Transform parent, Material material) 
         {
-            this.trees = trees;
+            this.models = FindObjectOfType<Models>();
 			this.detailLevels = detailLevels;
             terrianPosition = terrianCoord * terrianSize;
             bounds = new Bounds(terrianPosition, Vector2.one * terrianSize);
@@ -139,22 +137,36 @@ public class InfiniteTerrain : MonoBehaviour {
             UpdateTerrainSpawn();
 		}
 
-        void GenerateTrees(TerrianData terrianData, Mesh mesh)
+        void GenerateModels(TerrianData terrianData, Mesh mesh)
         {
             if (mesh != null)
             {
                 Vector3[] vertices = mesh.vertices;
                 Vector3[] normals = mesh.normals;
                 System.Random rand = new System.Random();
+                System.Random boatGeneration = new System.Random(10);
+
                 int index = 0;
                 foreach(Vector3 vertex in vertices)
                 {
                     if (vertex.y > 70 && vertex.y < 75)
                     {
-                        var tree = Instantiate(trees[rand.Next(0,3)], new Vector3(vertex.x + terrianPosition.x, vertex.y, vertex.z + terrianPosition.y), Quaternion.identity);
+                        var tree = Instantiate(models.trees[rand.Next(0,3)], new Vector3(vertex.x + terrianPosition.x, vertex.y, vertex.z + terrianPosition.y), Quaternion.identity);
                         tree.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
                         tree.transform.rotation = Quaternion.FromToRotation(Vector3.up, normals[index]);
                         tree.transform.parent = meshObject.transform;
+                    }
+
+                    if (vertex.y >= 49 && vertex.y <= 50)
+                    {
+                        var randomDouble = boatGeneration.NextDouble();
+                        if (randomDouble > 0.2 && randomDouble < 0.201)
+                        {
+                            var boat = Instantiate(models.boats[rand.Next(0, 5)], new Vector3(vertex.x + terrianPosition.x, vertex.y, vertex.z + terrianPosition.y), Quaternion.identity);
+                            boat.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+                            boat.transform.rotation = Quaternion.FromToRotation(Vector3.up, normals[index]);
+                            boat.transform.parent = meshObject.transform;
+                        }
                     }
                     index++;
                 }
@@ -197,7 +209,7 @@ public class InfiniteTerrain : MonoBehaviour {
                             meshDetailLevelObj.RequestMesh(terrianData);
 						}
 
-                        GenerateTrees(terrianData, meshDetailLevelObj.mesh);
+                        GenerateModels(terrianData, meshDetailLevelObj.mesh);
 					}
 
                     terrainChunksVisibleLastUpdate.Add(this);
