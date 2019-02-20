@@ -47,7 +47,7 @@
 			}
 
 			void surf(Input IN, inout SurfaceOutputStandard o) {
-				float minHeight = 0;
+				float minHeight = 50;
 				float maxHeight = 100;
 				float heightPercent = inverseLerp(minHeight, maxHeight, IN.worldPos.y);
 				float3 blendAxes = abs(IN.worldNormal);
