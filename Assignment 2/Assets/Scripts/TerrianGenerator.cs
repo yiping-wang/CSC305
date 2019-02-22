@@ -70,7 +70,10 @@ public class TerrianGenerator : MonoBehaviour {
 	}
 
 	void Update() {
-		if (terrianDataThreadInfoQueue.Count > 0) 
+        Light sun = FindObjectOfType<Light>();
+        textureAsset.UpdateLight(terrianMaterial, sun.transform.position, sun.intensity);
+
+        if (terrianDataThreadInfoQueue.Count > 0) 
         {
 			for (int i = 0; i < terrianDataThreadInfoQueue.Count; i++) 
             {

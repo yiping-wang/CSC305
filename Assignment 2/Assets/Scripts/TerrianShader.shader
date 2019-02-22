@@ -18,6 +18,9 @@
             const static float maxHeight = 100;
 
 			float sunIntensity;
+			float sunPosX;
+			float sunPosY;
+			float sunPosZ;
 			float3 baseTints[numLayers];
 			float baseStartLevels[numLayers];
 			float baseBlends[numLayers];
@@ -43,6 +46,20 @@
 				return xProjection + yProjection + zProjection;
 			}
 
+			float3 normalVector(float3 v) {
+				return (v) / (pow(v.x * v.x + v.y * v.y + v.z * v.z, 0.5));
+			}
+
+			float3 dotProduct(float3 x, float3 y) {
+				return x.x * y.x + x.y * y.y + x.z * y.z;
+			}
+
+			float phongBlinn(Input IN, float3 viewDir) {
+				float3 sunPos = float3(sunPosX, sunPosY, sunPosZ);
+				float H = float3(sunPos.x + viewDir.x, sunPos.y + viewDir.y, sunPos.z + viewDir.z);
+				return dotProduct(normalVector(H), normalVector(IN.worldNormal));
+			}
+
 			void surf(Input IN, inout SurfaceOutputStandard o) {
 				float3 viewDir = UNITY_MATRIX_IT_MV[2].xyz;
 				float heightLevel = inverseLinearInterp(minHeight, maxHeight, IN.worldPos.y);
@@ -52,7 +69,7 @@
 					float drawStrength = inverseLinearInterp(-baseBlends[i] / 2 - epsilon, baseBlends[i] / 2, heightLevel - baseStartLevels[i]);
 					float3 textureColor = calculateTextureColor(IN.worldPos, baseTextureScales[i], blendAxes, i) * (1 - baseColorStrength[i]);
 					o.Albedo = o.Albedo * (1 - drawStrength) + (baseTints[i] + textureColor) * drawStrength;
-					// o.Albedo += o.Albedo * sunIntensity * pow((IN.worldPos.x * viewDir.x + IN.worldPos.y * viewDir.y + IN.worldPos.z * viewDir.z), 100);
+					o.Albedo += sunIntensity * 0.1 * pow(phongBlinn(IN, viewDir), 1);
 				}
 			}
 			ENDCG

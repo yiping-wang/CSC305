@@ -51,4 +51,12 @@ public class TextureAsset : UpdatableData
         textureArray.Apply();
         return textureArray;
     }
+
+    public void UpdateLight(Material material, Vector3 pos, float intensity)
+    {
+        material.SetFloat("sunPosX", pos.x);
+        material.SetFloat("sunPosY", pos.y);
+        material.SetFloat("sunPosZ", pos.z);
+        material.SetFloat("sunIntensity", intensity);
+    }
 }
