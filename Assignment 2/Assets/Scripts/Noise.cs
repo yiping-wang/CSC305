@@ -8,7 +8,7 @@ public static class Noise {
 
 		System.Random prng = new System.Random (seed);
 		Vector2[] octaveOffsets = new Vector2[octaves];
-
+        PerlinNoise p = new PerlinNoise();
 		float maxPossibleHeight = 0;
 		float amplitude = 1;
 		float frequency = 1;
@@ -43,7 +43,7 @@ public static class Noise {
 					float sampleX = (x-halfWidth + octaveOffsets[i].x) / scale * frequency;
 					float sampleY = (y-halfHeight + octaveOffsets[i].y) / scale * frequency;
 
-                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
+                    float perlinValue = p.Generatee(sampleX, sampleY, 0) * 2 - 1;
 					noiseHeight += perlinValue * amplitude;
 
 					amplitude *= persistance;
