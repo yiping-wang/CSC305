@@ -4,21 +4,31 @@ using UnityEngine;
 
 public class Flock : MonoBehaviour {
 
-    public FlockManager myManager;
+    public FlockManager flockManager;
     float speed;
     bool turning = false;
 
 	// Use this for initialization
 	void Start () {
-        speed = Random.Range(myManager.minSpeed, myManager.maxSpeed);
+        speed = Random.Range(flockManager.minSpeed, flockManager.maxSpeed);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        Bounds bounds = new Bounds(myManager.goalPos, myManager.moveLimits * 3);
+        Bounds bounds = new Bounds(flockManager.goalPos, flockManager.moveLimits * 3);
+
+        RaycastHit hit = new RaycastHit();
+        Vector3 direction = flockManager.goalPos - transform.position;
+
         if (!bounds.Contains(transform.position))
         {
             turning = true;
+        }
+        else if (Physics.Raycast(transform.position, this.transform.forward * 50, out hit))
+        {
+            turning = true;
+            direction = Vector3.Reflect(this.transform.forward, hit.normal).normalized;
+            Debug.DrawRay(this.transform.position, this.transform.forward * 5, Color.red);
         }
         else
         {
@@ -27,16 +37,15 @@ public class Flock : MonoBehaviour {
 
         if (turning)
         {
-            Vector3 direction = myManager.goalPos - transform.position;
             transform.rotation = Quaternion.Slerp(transform.rotation,
                                                  Quaternion.LookRotation(direction),
-                                                  myManager.rotationSpeed * Time.deltaTime);
+                                                  flockManager.rotationSpeed * Time.deltaTime);
         }
         else 
         {
             if (Random.Range(0, 100) < 10)
             {
-                speed = Random.Range(myManager.minSpeed, myManager.maxSpeed);
+                speed = Random.Range(flockManager.minSpeed, flockManager.maxSpeed);
             }
             if (Random.Range(0, 100) < 20)
             {
@@ -49,7 +58,7 @@ public class Flock : MonoBehaviour {
 
     void ApplyRules()
     {
-        GameObject[] gos = myManager.allBoid;
+        GameObject[] gos = flockManager.allBoid;
         Vector3 vcentre = Vector3.zero;
         Vector3 vavoid = Vector3.zero;
         float gSpeed = 0.01f;
@@ -62,7 +71,7 @@ public class Flock : MonoBehaviour {
             {
                 
                 nDistance = Vector3.Distance(go.transform.position, this.transform.position);
-                if (nDistance <= myManager.neighbourDistance)
+                if (nDistance <= flockManager.neighbourDistance)
                 {
                     vcentre += go.transform.position;
                     groupSize++;
@@ -79,14 +88,14 @@ public class Flock : MonoBehaviour {
 
             if (groupSize > 0)
             {
-                vcentre = vcentre / groupSize + (myManager.goalPos);
+                vcentre = vcentre / groupSize + (flockManager.goalPos);
                 speed = gSpeed / groupSize;
                 Vector3 diretion = (vcentre + vavoid) - transform.position;
                 if (diretion != Vector3.zero)
                 {
                     transform.rotation = Quaternion.Slerp(transform.rotation,
                                                          Quaternion.LookRotation(diretion),
-                                                          myManager.rotationSpeed * Time.deltaTime);
+                                                          flockManager.rotationSpeed * Time.deltaTime);
                 }
             }
         }

@@ -95,4 +95,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9faf0fc2319c04ead9f607447081494c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myManager: {fileID: 0}
+  flockManager: {fileID: 0}
