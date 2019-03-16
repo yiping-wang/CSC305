@@ -54,7 +54,18 @@ public class CatmullRomSpline : MonoBehaviour
         }
     }
 
-    //Clamp the list positions to allow looping
+    public static Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        //The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
+        Vector3 a = 2f * p1;
+        Vector3 b = p2 - p0;
+        Vector3 c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
+        Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
+
+        //The cubic polynomial: a + b * t + c * t^2 + d * t^3
+        return 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
+    }
+
     int ClampListPos(int pos)
     {
         if (pos < 0)
@@ -74,18 +85,21 @@ public class CatmullRomSpline : MonoBehaviour
         return pos;
     }
 
-    //Returns a position between 4 Vector3 with Catmull-Rom spline algorithm
-
-    Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    public static int ClampListPos(int pos, Transform[] controlPointsList)
     {
-        //The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
-        Vector3 a = 2f * p1;
-        Vector3 b = p2 - p0;
-        Vector3 c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
-        Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
+        if (pos < 0)
+        {
+            pos = controlPointsList.Length - 1;
+        }
 
-        //The cubic polynomial: a + b * t + c * t^2 + d * t^3
-        Vector3 pos = 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
+        if (pos > controlPointsList.Length)
+        {
+            pos = 1;
+        }
+        else if (pos > controlPointsList.Length - 1)
+        {
+            pos = 0;
+        }
 
         return pos;
     }

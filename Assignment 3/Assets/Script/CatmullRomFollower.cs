@@ -16,7 +16,7 @@ public class CatmullRomFollower : MonoBehaviour {
 	void Start () 
     {
         t = 0;
-        speed = 0.5f;
+        speed = 0.2f;
         coroutineAllowed = true;
 	}
 	
@@ -39,16 +39,16 @@ public class CatmullRomFollower : MonoBehaviour {
             posIndex = 0;
         }
 
-        Vector3 p0 = controlPointsList[ClampListPos(posIndex - 1)].position;
+        Vector3 p0 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex - 1, controlPointsList)].position;
         Vector3 p1 = controlPointsList[posIndex].position;
-        Vector3 p2 = controlPointsList[ClampListPos(posIndex + 1)].position;
-        Vector3 p3 = controlPointsList[ClampListPos(posIndex + 2)].position;
+        Vector3 p2 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex + 1, controlPointsList)].position;
+        Vector3 p3 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex + 2, controlPointsList)].position;
         posIndex += 1;
 
         while (t < 1)
         {
             t += Time.deltaTime * speed;
-            pos = GetCatmullRomPosition(t, p0, p1, p2, p3);
+            pos = CatmullRomSpline.GetCatmullRomPosition(t, p0, p1, p2, p3);
             transform.position = pos;
             yield return new WaitForEndOfFrame();
         }
@@ -58,37 +58,5 @@ public class CatmullRomFollower : MonoBehaviour {
         t = 0;
 
         coroutineAllowed = true;
-    }
-
-
-    Vector3 GetCatmullRomPosition(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
-    {
-        //The coefficients of the cubic polynomial (except the 0.5f * which I added later for performance)
-        Vector3 a = 2f * p1;
-        Vector3 b = p2 - p0;
-        Vector3 c = 2f * p0 - 5f * p1 + 4f * p2 - p3;
-        Vector3 d = -p0 + 3f * p1 - 3f * p2 + p3;
-
-        //The cubic polynomial: a + b * t + c * t^2 + d * t^3
-        return 0.5f * (a + (b * t) + (c * t * t) + (d * t * t * t));
-    }
-
-    int ClampListPos(int pos)
-    {
-        if (pos < 0)
-        {
-            pos = controlPointsList.Length - 1;
-        }
-
-        if (pos > controlPointsList.Length)
-        {
-            pos = 1;
-        }
-        else if (pos > controlPointsList.Length - 1)
-        {
-            pos = 0;
-        }
-
-        return pos;
     }
 }
