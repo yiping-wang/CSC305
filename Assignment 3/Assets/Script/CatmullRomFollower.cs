@@ -30,11 +30,15 @@ public class CatmullRomFollower : MonoBehaviour {
 
     IEnumerator Mover()
     {
+        float rate = 0.1f;
+
         coroutineAllowed = false;
+
         if (posIndex == 4)
         {
             posIndex = 0;
         }
+
         Vector3 p0 = controlPointsList[ClampListPos(posIndex - 1)].position;
         Vector3 p1 = controlPointsList[posIndex].position;
         Vector3 p2 = controlPointsList[ClampListPos(posIndex + 1)].position;
@@ -48,6 +52,8 @@ public class CatmullRomFollower : MonoBehaviour {
             transform.position = pos;
             yield return new WaitForEndOfFrame();
         }
+
+        transform.Rotate(Vector3.up, 90f);
 
         t = 0;
 
