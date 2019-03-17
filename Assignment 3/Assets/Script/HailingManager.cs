@@ -32,6 +32,7 @@ public class HailingManager : MonoBehaviour
             for (int i = 0; i < numFalls; i++)
             {
                 GameObject falling = (GameObject)Instantiate(fallPrefab, transform.position, Quaternion.identity);
+                falling.transform.parent = transform;
                 falling.GetComponent<Hailing>().hailingManager = this;
                 Vector3 direction = new Vector3(Random.Range(-10, 10), -5, Random.Range(-10, 10));
                 falling.transform.forward = direction.normalized;
