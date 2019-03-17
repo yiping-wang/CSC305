@@ -399,7 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 1635348046462762, guid: 4064d927d92b84523b834d00d401287c, type: 2}
   leader: {fileID: 1124132952}
-  numBoid: 30
+  numBoid: 50
   allBoid: []
   moveLimits: {x: 3, y: 3, z: 3}
   goalPos: {x: 0, y: 0, z: 0}
@@ -505,6 +505,52 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &853991261
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 853991262}
+  - component: {fileID: 853991263}
+  m_Layer: 0
+  m_Name: HailingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &853991262
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 853991261}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.977866, y: 10, z: 3.9567175}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &853991263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 853991261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4abb4f5f1a715480387f1fedfeb6de85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fallPrefab: {fileID: 1046152478806518, guid: 5feeb38e80c2d45afb38d7fffc92e8a2, type: 2}
+  numFalls: 50
+  minSpeed: 2
+  maxSpeed: 5
+  height: 5
+  spawnInterval: 0
 --- !u!1 &882636444
 GameObject:
   m_ObjectHideFlags: 0
