@@ -6,16 +6,16 @@ public class CatmullRomFollower : MonoBehaviour {
 
     public Transform[] controlPointsList;
 
-    int routeToGo;
     float t;
     Vector3 pos;
     float speed;
     bool coroutineAllowed;
-    int posIndex = 0;
+    int controlPointsIndex;
 
 	void Start () 
     {
         t = 0;
+        controlPointsIndex = 0;
         speed = 0.2f;
         coroutineAllowed = true;
 	}
@@ -30,30 +30,29 @@ public class CatmullRomFollower : MonoBehaviour {
 
     IEnumerator Mover()
     {
-        float rate = 0.1f;
-
         coroutineAllowed = false;
 
-        if (posIndex == 4)
+        if (controlPointsIndex == 4)
         {
-            posIndex = 0;
+            controlPointsIndex = 0;
         }
 
-        Vector3 p0 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex - 1, controlPointsList)].position;
-        Vector3 p1 = controlPointsList[posIndex].position;
-        Vector3 p2 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex + 1, controlPointsList)].position;
-        Vector3 p3 = controlPointsList[CatmullRomSpline.ClampListPos(posIndex + 2, controlPointsList)].position;
-        posIndex += 1;
+        Vector3 p0 = controlPointsList[CatmullRomSpline.ClampListPos(controlPointsIndex - 1, controlPointsList)].position;
+        Vector3 p1 = controlPointsList[controlPointsIndex].position;
+        Vector3 p2 = controlPointsList[CatmullRomSpline.ClampListPos(controlPointsIndex + 1, controlPointsList)].position;
+        Vector3 p3 = controlPointsList[CatmullRomSpline.ClampListPos(controlPointsIndex + 2, controlPointsList)].position;
+        controlPointsIndex += 1;
 
         while (t < 1)
         {
             t += Time.deltaTime * speed;
             pos = CatmullRomSpline.GetCatmullRomPosition(t, p0, p1, p2, p3);
+            Vector3 newDir = Vector3.RotateTowards(transform.forward, (pos - transform.position).normalized, Time.deltaTime * speed * 10, 0.0f);
+            transform.rotation = Quaternion.LookRotation(newDir);
             transform.position = pos;
+            Debug.DrawRay(transform.position, newDir, Color.green);
             yield return new WaitForEndOfFrame();
         }
-
-        transform.Rotate(Vector3.up, 90f);
 
         t = 0;
 
