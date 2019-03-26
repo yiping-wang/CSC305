@@ -27,7 +27,16 @@ public class Flock : MonoBehaviour {
         else if (Physics.Raycast(transform.position, this.transform.forward * 50, out hit))
         {
             turning = true;
-            direction = Vector3.Reflect(this.transform.forward, hit.normal).normalized;
+            // direction = Vector3.Reflect(this.transform.forward, hit.normal).normalized;
+            if(Random.Range(0, 1f) < 0.5)
+            {
+                direction = Vector3.left;
+            }
+            else 
+            {
+                direction = Vector3.right;
+            }
+
             Debug.DrawRay(this.transform.position, this.transform.forward * 5, Color.red);
         }
         else
@@ -39,7 +48,7 @@ public class Flock : MonoBehaviour {
         {
             transform.rotation = Quaternion.Slerp(transform.rotation,
                                                  Quaternion.LookRotation(direction),
-                                                  flockManager.rotationSpeed * Time.deltaTime);
+                                                  flockManager.rotationSpeed * 10 * Time.deltaTime);
         }
         else 
         {
@@ -100,4 +109,13 @@ public class Flock : MonoBehaviour {
             }
         }
     }
+
+	void OnCollisionEnter(Collision collision)
+	{
+        if (collision.gameObject.tag == "Boid")
+        {
+            Collider collider = GetComponent<Collider>();
+            Physics.IgnoreCollision(collision.collider, collider);
+        }
+	}
 }
