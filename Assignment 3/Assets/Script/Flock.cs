@@ -7,6 +7,7 @@ public class Flock : MonoBehaviour {
     public FlockManager flockManager;
     float speed;
     bool turning = false;
+    bool shift = false;
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +16,7 @@ public class Flock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Bounds bounds = new Bounds(flockManager.goalPos, flockManager.moveLimits * 3);
+        Bounds bounds = new Bounds(flockManager.goalPos, flockManager.moveLimits * 2);
 
         RaycastHit hit = new RaycastHit();
         Vector3 direction = flockManager.goalPos - transform.position;
@@ -26,29 +27,39 @@ public class Flock : MonoBehaviour {
         }
         else if (Physics.Raycast(transform.position, this.transform.forward * 50, out hit))
         {
-            turning = true;
-            // direction = Vector3.Reflect(this.transform.forward, hit.normal).normalized;
-            if(Random.Range(0, 1f) < 0.5)
+            if (hit.transform.tag != "RightBoid" || hit.transform.tag != "LeftBoid")
             {
-                direction = Vector3.left;
-            }
-            else 
-            {
-                direction = Vector3.right;
-            }
+                shift = true;
+                // direction = Vector3.Reflect(this.transform.forward, hit.normal).normalized;
+                if (tag == "RightBoid")
+                {
+                    direction = Vector3.right;
+                }
+                else
+                {
+                    direction = Vector3.left;
+                }
 
-            Debug.DrawRay(this.transform.position, this.transform.forward * 5, Color.red);
+                Debug.DrawRay(this.transform.position, this.transform.forward * 5, Color.red);
+            }
+            
         }
         else
         {
             turning = false;
+            shift = false;
         }
 
-        if (turning)
+        if (turning || shift)
         {
+            float mul = 1f;
+            if (shift)
+            {
+                mul = 15f;
+            }
             transform.rotation = Quaternion.Slerp(transform.rotation,
                                                  Quaternion.LookRotation(direction),
-                                                  flockManager.rotationSpeed * 10 * Time.deltaTime);
+                                                  flockManager.rotationSpeed * mul * Time.deltaTime);
         }
         else 
         {
@@ -112,7 +123,7 @@ public class Flock : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision)
 	{
-        if (collision.gameObject.tag == "Boid")
+        if (collision.gameObject.tag == "RightBoid" || collision.gameObject.tag == "LeftBoid")
         {
             Collider collider = GetComponent<Collider>();
             Physics.IgnoreCollision(collision.collider, collider);

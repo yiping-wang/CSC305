@@ -31,6 +31,14 @@ public class FlockManager : MonoBehaviour {
                                                                 Random.Range(-moveLimits.y, moveLimits.y),
                                                                 Random.Range(-moveLimits.z, moveLimits.z));
             allBoid[i] = (GameObject)Instantiate(boidPrefab, pos, Quaternion.identity);
+            if (Random.Range(0f, 1f) < 0.5)
+            {
+                allBoid[i].tag = "LeftBoid";
+            }
+            else
+            {
+                allBoid[i].tag = "RightBoid";
+            }
             allBoid[i].transform.parent = transform;
             allBoid[i].GetComponent<Flock>().flockManager = this;
         }

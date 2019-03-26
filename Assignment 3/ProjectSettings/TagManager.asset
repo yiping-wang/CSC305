@@ -6,6 +6,8 @@ TagManager:
   tags:
   - FallingObject
   - Boid
+  - LeftBoid
+  - RightBoid
   layers:
   - Default
   - TransparentFX
